@@ -22,11 +22,14 @@
   "homepage": "https://github.com/pk382/drychat#readme",
   "dependencies": {
     "actionhero": "^11.2.4",
-    "express": "^4.12.4"
+    "express": "^4.12.4",
+    "jquery": "^2.1.4",
+    "react": "^0.13.3"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
-    "gulp-nodemon": "^2.0.3"
+    "gulp-nodemon": "^2.0.3",
+    "reactify": "^1.1.1"
   }
 }

@@ -17,7 +17,9 @@ gulp.task('html', function() {
 
 gulp.task('browserify', function() {
   gulp.src('frontend/client.js')
-    .pipe(browserify())
+    .pipe(browserify({
+      transform: ['reactify']
+    }))
     .pipe(gulp.dest('.public'));
 });
 
