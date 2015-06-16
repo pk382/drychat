@@ -1,0 +1,31 @@
+{
+  "name": "drychat",
+  "version": "1.0.0",
+  "description": "A messaging application tailored for developers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pk382/drychat.git"
+  },
+  "keywords": [
+    "messaging",
+    "collaborative"
+  ],
+  "author": "Pradyoth Kukkapalli, Lawrence Luk, Xiaoyi Mao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pk382/drychat/issues"
+  },
+  "homepage": "https://github.com/pk382/drychat#readme",
+  "dependencies": {
+    "actionhero": "^11.2.4",
+    "express": "^4.12.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-nodemon": "^2.0.3"
+  }
+}
