@@ -17,7 +17,7 @@ gulp.task('html', function() {
 });
 
 gulp.task('less', function () {
-  return gulp.src('frontend/less/chat.less')
+  return gulp.src('frontend/less/master.less')
     .pipe(less())
     .pipe(gulp.dest('.public/css'));
 });
