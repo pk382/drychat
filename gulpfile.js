@@ -5,7 +5,7 @@ var browserify = require('gulp-browserify');
 gulp.task('start', function() {
   nodemon({
     script: 'index.js',
-    tasks: ['html', 'browserify'],
+    tasks: ['html', 'less', 'browserify'],
     ext: 'html js less css'
   });
 });
@@ -13,6 +13,12 @@ gulp.task('start', function() {
 gulp.task('html', function() {
   gulp.src('frontend/index.html')
     .pipe(gulp.dest('.public'));
+});
+
+gulp.task('less', function () {
+  return gulp.src('frontend/less/chat.less')
+    .pipe(less())
+    .pipe(gulp.dest('.public/css'));
 });
 
 gulp.task('browserify', function() {
@@ -23,4 +29,4 @@ gulp.task('browserify', function() {
     .pipe(gulp.dest('.public'));
 });
 
-gulp.task('default', ['html', 'browserify', 'start']);
+gulp.task('default', ['html', 'less', 'browserify', 'start']);
