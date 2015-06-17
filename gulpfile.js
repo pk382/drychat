@@ -6,7 +6,7 @@ var less = require('gulp-less');
 gulp.task('start', function() {
   nodemon({
     script: 'index.js',
-    tasks: ['html', 'less', 'browserify'],
+    tasks: ['html', 'less', 'browserify','images'],
     ext: 'html js less css'
   });
 });
@@ -30,4 +30,9 @@ gulp.task('browserify', function() {
     .pipe(gulp.dest('.public'));
 });
 
-gulp.task('default', ['html', 'less', 'browserify', 'start']);
+gulp.task('images', function() {
+  gulp.src('frontend/images/**')
+      .pipe(gulp.dest('.public/images'));
+});
+
+gulp.task('default', ['html', 'less', 'browserify','images', 'start']);
