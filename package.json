@@ -22,6 +22,7 @@
   "homepage": "https://github.com/pk382/drychat#readme",
   "dependencies": {
     "actionhero": "^11.2.4",
+    "body-parser": "^1.13.1",
     "express": "^4.12.4",
     "jquery": "^2.1.4",
     "marked": "^0.3.3",
