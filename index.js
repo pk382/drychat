@@ -11,20 +11,19 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-app.get('/sample', function(request, response) {
+app.get('/initial', function(request, response) {
   response.setHeader('Content-Type', 'application/json');
   response.send(JSON.stringify(messages));
 });
 
-app.post('/sample', function(request, response) {
-  console.log('Got message ' + request.body.toString());
-  messages.push(request.body);
-  response.setHeader('Content-Type', 'application/json');
-  response.send(messages);
-});
-
 io.on('connection', function(socket){
   console.log('a user connected');
+  socket.on('chat message', function(message) {
+    console.log('Got a message!');
+    messages.push(message);
+    socket.broadcast.emit('chat message', message);
+  });
+
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
