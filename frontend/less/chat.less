@@ -3,32 +3,44 @@
 }
 
 .chatList {
-//  background: @gray;
-  padding: 2rem 0;
+  height: (92vh-@formheight);
+  width: 100%;
+  //height: (50vh-@formheight);
+  //max-height: (50vh-@formheight);
+  overflow: scroll;
+  padding: 2vh 0;
 }
 
 .message-container {
-  margin: 1rem 0;
-  width: 70%;
+  margin-top: 0.5rem;
+  width: 100%;
 
   .author-container {
     background-color: #FFF;
-    border-left: 0.6rem solid #AAA;
+    border-left: 0.4rem solid #AAA;
     display: inline-block;
     width: 20%;
-    margin-right: 0.3rem;
     min-width: 10rem;
     max-width: 20rem;
-    padding: 0.5rem;
+    padding: 0.2rem;
     vertical-align: top;
 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     .gravatar {
-      width: 3rem;
-      height: 3rem;
+      width: 1.5rem;
+      height: 1.5rem;
       vertical-align: middle;
       border-radius: 1.5rem;
       background-color: #55A1B5;
       display: inline-block;
+      margin-left: 0.5rem;
+
+      @media only screen and (max-width : @small) {
+        margin-left: 0;
+      } 
     }
 
     .author {
@@ -40,12 +52,13 @@
   .message {
     background: #FCFCFC;
     display: inline-block;
-    padding: 0.5rem 1rem 0.5rem 2rem;
+    font-size: 0.9rem;
+    padding: 0 1rem 0.3rem 1rem;
     width: 70%;
 
     .timestamp {
       color: #CCC;
-      font-size: 0.8rem;
+      font-size: 0.6rem;
       float: right;
     }
   }
@@ -57,9 +70,24 @@
   }
 }
 
-.codeblock code {
-  background-color: #FAFAFA;
-  border: 0.2rem solid #CCC;
+.codeblock {
+  background: #EEE;
   border-radius: 4px;
+  margin: 0.5rem 0;
   padding: 0.5rem
+}
+
+.chatForm {
+  height: @formheight;
+  width: 100%;
+}
+
+.message-field {
+  width: 70%;
+  text-align: top;
+  height: 100%;
+}
+
+.message-send {
+  width: 20%;
 }
