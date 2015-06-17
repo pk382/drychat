@@ -122,7 +122,6 @@ var Message = React.createClass({
         </div>
       </div>
     );
-    );
   }
 });
 
