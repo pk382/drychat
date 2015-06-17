@@ -1,3 +1,65 @@
-body {
-  background: #FFF;
+.ChatBox {
+  font-family: "Droid Sans", sans-serif;
+}
+
+.chatList {
+//  background: @gray;
+  padding: 2rem 0;
+}
+
+.message-container {
+  margin: 1rem 0;
+  width: 70%;
+
+  .author-container {
+    background-color: #FFF;
+    border-left: 0.6rem solid #AAA;
+    display: inline-block;
+    width: 20%;
+    margin-right: 0.3rem;
+    min-width: 10rem;
+    max-width: 20rem;
+    padding: 0.5rem;
+    vertical-align: top;
+
+    .gravatar {
+      width: 3rem;
+      height: 3rem;
+      vertical-align: middle;
+      border-radius: 1.5rem;
+      background-color: #55A1B5;
+      display: inline-block;
+    }
+
+    .author {
+      display: inline-block;
+      margin-left: 1rem;
+    }
+  }
+
+  .message {
+    background: #FCFCFC;
+    display: inline-block;
+    padding: 0.5rem 1rem 0.5rem 2rem;
+    width: 70%;
+
+    .timestamp {
+      color: #CCC;
+      font-size: 0.8rem;
+      float: right;
+    }
+  }
+}
+
+.message-container.myself {
+  .author-container {
+    background-color: #F7F7D6;
+  }
+}
+
+.codeblock code {
+  background-color: #FAFAFA;
+  border: 0.2rem solid #CCC;
+  border-radius: 4px;
+  padding: 0.5rem
 }

@@ -19,7 +19,9 @@ var ChatBox = React.createClass({
     });
   },
   handleMessageSend: function(message) {
-    console.log('we here');
+    message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+    var date = new Date();
+    message.timestamp = date.getHours().toString() + ':' + date.getMinutes().toString();
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages});
@@ -58,7 +60,7 @@ var ChatList = React.createClass({
   render: function() {
     var messageNodes = this.props.data.map(function(message) {
       return (
-        <Message author={message.author}>
+        <Message msg={message}>
           {message.text}
         </Message>
       );
@@ -98,13 +100,28 @@ var ChatForm = React.createClass({
 var Message = React.createClass({
   render: function() {
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+    var generatedClass=this.props.msg.myself ? "message-container myself" : "message-container";
+
+    var chunks = this.props.msg.text.split("//");
+    var code;
+    if (chunks.length > 1) {
+      var normalText = chunks[0];
+      chunks.shift();
+      code = (<div className="codeblock"><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: true})}} /><pre><code>{chunks.join("")}</code></pre></div>);
+    }
+    var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
     return (
-      <div className="message">
-        <h2 className="messageAuthor">
-          {this.props.author}
-        </h2>
-        <span dangerouslySetInnerHTML={{__html: rawMarkup}} />
+      <div className={generatedClass}>
+        <div className="author-container" style={{'borderColor': this.props.msg.color}}>
+          <div className="gravatar"></div>
+          <div className="author"><strong>{this.props.msg.author}</strong></div>
+        </div>
+        <div className="message">
+          {messageBody}
+          <div className="timestamp">{this.props.msg.timestamp}</div>
+        </div>
       </div>
+    );
     );
   }
 });
