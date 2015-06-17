@@ -52,9 +52,12 @@ var ChatBox = React.createClass({
 
 var ChatList = React.createClass({
   render: function() {
+    var currentAuthor = "";
     var messageNodes = this.props.data.map(function(message) {
+      var sameAuthor = currentAuthor == message.author;
+      currentAuthor = message.author;
       return (
-        <Message msg={message}>
+        <Message msg={message} sameAuthor={sameAuthor}>
           {message.text}
         </Message>
       );
@@ -96,6 +99,10 @@ var ChatForm = React.createClass({
 
 var Message = React.createClass({
   render: function() {
+    var authorBody = (<div className="author-container"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
+    if (this.props.sameAuthor) {
+      authorBody = (<div className="author-container"></div>);
+    }
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
     var generatedClass = this.props.msg.myself ? "message-container myself" : "message-container";
 
@@ -108,11 +115,8 @@ var Message = React.createClass({
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
     return (
-      <div className={generatedClass}>
-        <div className="author-container" style={{'borderColor': this.props.msg.color}}>
-          <div className="gravatar"></div>
-          <div className="author"><strong>{this.props.msg.author}</strong></div>
-        </div>
+      <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
+        {authorBody}
         <div className="message">
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
