@@ -3,6 +3,18 @@ var marked = require('marked');
 var $ = require('jquery');
 var io = require('socket.io-client');
 var socket = io();
+var SidePanel = require('./sidePanel.js');
+
+var Application = React.createClass({
+	render: function () {
+		return (
+			<div className = "Application">
+			<SidePanel/>
+			<ChatBox url="sample" pollInterval={2000}/>
+			</div>
+			);
+	}
+});
 
 var ChatBox = React.createClass({
   loadMessagesFromServer: function() {
@@ -126,6 +138,6 @@ var Message = React.createClass({
 });
 
 React.render(
-  <ChatBox url="sample" pollInterval={2000}/>,
+  <Application />,
   document.getElementById('content')
 );
