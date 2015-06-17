@@ -2,7 +2,7 @@ var React = require('react');
 var marked = require('marked');
 var $ = require('jquery');
 var io = require('socket.io-client');
-var socket = io();
+var socket = io.connect();
 
 var ChatBox = React.createClass({
   loadMessagesFromServer: function() {
@@ -25,25 +25,19 @@ var ChatBox = React.createClass({
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages});
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: message,
-      success: function(data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, data, error) {
-        console.error(this.props.url, status, error.toString());
-      }.bind(this)
-    });
+    socket.emit('chat message', message);
+  },
+  handleMessageReceive: function(message) {
+    var messages = this.state.data;
+    var newMessages = messages.concat([message]);
+    this.setState({data: newMessages});
   },
   getInitialState: function() {
     return {data: []};
   },
   componentDidMount: function() {
     this.loadMessagesFromServer();
-    setInterval(this.loadMessagesFromServer, this.props.pollInterval);
+    socket.on('chat message', this.handleMessageReceive);
   },
   render: function() {
     return (
@@ -126,6 +120,6 @@ var Message = React.createClass({
 });
 
 React.render(
-  <ChatBox url="sample" pollInterval={2000}/>,
+  <ChatBox url="initial"/>,
   document.getElementById('content')
 );
