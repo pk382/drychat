@@ -3,6 +3,10 @@ var marked = require('marked');
 var $ = require('jquery');
 var io = require('socket.io-client');
 var socket = io.connect();
+var {SparkScroll, SparkProxy, sparkScrollFactory} =
+  require('react-spark-scroll/spark-scroll-rekapi')({
+    invalidateAutomatically: true
+  });
 
 var ChatBox = React.createClass({
   loadMessagesFromServer: function() {
@@ -114,6 +118,7 @@ var Message = React.createClass({
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
+        <button className="pin-button"></button>
       </div>
     );
   }
