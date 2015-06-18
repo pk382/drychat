@@ -131,7 +131,26 @@ var Message = React.createClass({
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
       normalText = emojione.toImage(normalText);
-      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} /><div className="codeblock"><pre><code>{ss}</code></pre></div></div>);
+      code = (<div>
+                <span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} />
+                <div className="codeblock">
+                  <pre><code>{ss}</code></pre>
+                </div>
+                <div className="action-buttons">
+                  <button className="action-button" onClick={this.pinMessage} title="Pin">
+                    <i className="fa fa-thumb-tack"></i>
+                  </button>
+                  <button className="action-button" title="Copy to Clipboard">
+                    <i className="fa fa-copy"></i>
+                  </button>
+                  <button className="action-button" title="Search">
+                    <i className="fa fa-search"></i>
+                  </button>
+                  <button className="action-button" title="Edit">
+                    <i className="fa fa-pencil"></i>
+                  </button>
+                </div>
+              </div>);
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
     return (
@@ -141,7 +160,6 @@ var Message = React.createClass({
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
-        <button onClick={this.pinMessage}>Pin</button>
       </div>
     );
   },
