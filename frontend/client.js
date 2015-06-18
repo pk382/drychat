@@ -162,12 +162,13 @@ var Message = React.createClass({
 		this.setState({id: this.state.id, pinned: true});
 	},
 	getInitialState: function() {
-		return {id: guid(), pinned: false};
+		return { pinned: false};
 	},
 	selectAll: function() {
 
 	},
 	render: function() {
+		this.state.id = guid();
     emojione.ascii = true; //jus making sure
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
@@ -184,6 +185,8 @@ var Message = React.createClass({
     var chunks = ss.split(SPLIT_CHARS)
     ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
     var code;
+    console.log("idbfr: "+ this.state.id);
+
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
       normalText = emojione.toImage(normalText);
@@ -191,14 +194,14 @@ var Message = React.createClass({
                 <span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} />
                 <div className="codeblock">
                   <pre>
-										<code ref="code">{ss}</code>
+										<code id={"code-"+this.state.id} ref="code">{ss}</code>
 									</pre>
                 </div>
                 <div className="action-buttons">
                   <button className="action-button" onClick={this.pinMessage} title="Pin">
                     <i className="fa fa-thumb-tack"></i>
                   </button>
-                  <button className="action-button" id={"copyBtn"} title="Copy to Clipboard">
+                  <button className="action-button" id={"copyBtn-"+this.state.id} title="Copy to Clipboard">
                     <i className="fa fa-copy"></i>
                   </button>
                   <button className="action-button" title="Search">
@@ -209,18 +212,11 @@ var Message = React.createClass({
                   </button>
                 </div>
               </div>);
+			
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
-    $("#copyBtn").click(function(){
-    	var msgDiv = null;
-			for (var i = 0; i < this.childNodes.length; i++) {
-		    if (this.childNodes[i].className == "message") {
-		      msgDiv = this.childNodes[i];
-		      break;
-		    }
-			}
-    	select_all(msgDiv);
-    });
+    console.log("idlater: "+ this.state.id);
+    
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
@@ -236,6 +232,10 @@ var Message = React.createClass({
       hljs.highlightBlock(block);
     });
 		$('.pinned').pin({containerSelector: '.ChatBox'});
+		var msgId = this.state.id;
+		$("#copyBtn-"+this.state.id).click(function(){
+  		select_all((document.getElementById("code-"+msgId)));
+  	});
   }
 });
 
