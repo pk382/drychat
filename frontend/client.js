@@ -251,6 +251,7 @@ var Message = React.createClass({
 		$('.pinned').pin({containerSelector: '.ChatBox'});
 		var msgId = this.state.id;
 		$("#copyBtn-"+this.state.id).click(function(){
+			console.log("copy btn: "+document.getElementById("code-"+msgId));
   		select_all((document.getElementById("code-"+msgId)));
   	});
   }
@@ -262,6 +263,7 @@ React.render(
 );
 
 function select_all(el) {
+	console.log("element: "+el);
   if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
       var range = document.createRange();
       range.selectNodeContents(el);
