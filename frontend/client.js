@@ -162,7 +162,7 @@ var Message = React.createClass({
                   <button className="action-button" onClick={this.pinMessage} title="Pin">
                     <i className="fa fa-thumb-tack"></i>
                   </button>
-                  <button className="action-button" title="Copy to Clipboard">
+                  <button className="action-button" id="copyBtn" title="Copy to Clipboard">
                     <i className="fa fa-copy"></i>
                   </button>
                   <button className="action-button" title="Search">
@@ -175,7 +175,16 @@ var Message = React.createClass({
               </div>);
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
-
+    $("#copyBtn").click(function(){
+    	var msgDiv = null;
+			for (var i = 0; i < this.childNodes.length; i++) {
+		    if (this.childNodes[i].className == "message") {
+		      msgDiv = this.childNodes[i];
+		      break;
+		    }        
+			}
+    	select_all(msgDiv);
+    });
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
@@ -222,3 +231,17 @@ $("textarea").keydown(function(e){
       e.preventDefault();
   }
 });
+
+function select_all(el) {
+  if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+  } else if (typeof document.selection != "undefined" && typeof document.body.createTextRange != "undefined") {
+      var textRange = document.body.createTextRange();
+      textRange.moveToElementText(el);
+      textRange.select();
+  }
+}
