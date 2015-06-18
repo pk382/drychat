@@ -117,7 +117,7 @@ var ChatBox = React.createClass({
   },
   render: function() {
     return (
-      <div className="ChatBox col-md-9">
+      <div className="ChatBox col-sm-9 col-xs-12">
         <ChatList data={this.state.data}/>
         <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
       </div>
@@ -173,8 +173,8 @@ var ChatForm = React.createClass({
   render: function() {
     return (
       <form className="chatForm row" onSubmit={this.handleSubmit}>
-        <textarea placeholder="Say something..." className="message-field col-xs-10" ref="text"/>
-        <input type="submit" value="Send" className="message-send col-xs-2" Send/>
+        <textarea placeholder="Say something..." className="message-field col-sm-10 col-xs-9" ref="text"/>
+        <input type="submit" value="Send" className="message-send col-sm-2 col-xs-3" Send/>
       </form>
     );
   }

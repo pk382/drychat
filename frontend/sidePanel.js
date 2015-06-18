@@ -4,8 +4,8 @@ var $ = require('jquery');
 var sidePanel = React.createClass({
 	render: function() {
 		return (
-			<div className = "sidePanel col-md-3">
-				<h1>Participants</h1>
+			<div className = "sidePanel col-sm-3 col-xs-12">
+				<h3>Participants</h3>
 				<UsersList users={this.props.users}/>
 			</div>
 		);
@@ -28,7 +28,7 @@ var UsersList = React.createClass({
 			return <User>{user}</User>
 		})
 		return (
-				<div className = "usersList col-md-12">
+				<div className = "usersList">
 					{userNodes}
 				</div>
 		);

@@ -4,33 +4,45 @@
 	display: inline-block;
 	font-family: "Droid Sans", sans-serif;
 	height: 100%;
+	padding-right: 0;
 
-	h1 {
+	h3 {
 		color: #FFF;
+		padding-left: 2rem;
+
+		@media only screen and (max-width : @small) {
+			font-size: 1.5rem;
+		}
+	}
+
+	@media only screen and (max-width : @small) {
+		height: 15rem;
+		overflow: scroll;
 	}
 }
 
 .usersList {
 	// background-color: @gray;
+	width: 100%;
 }
 
 
 .userContainer {
-	margin: 1rem 0;
-	border-left: 0.6rem solid #AAA;
-	height: 4rem;
+	margin: 0.3rem 0;
+	background: #474747;
+	border-left: 0.4rem solid #AAA;
+	padding: 0.5rem 0;
 	//display: block;
 	vertical-aligh: top;
 	
 	.gravatar {
-		padding-left: 4rem;
 		vertical-align: middle;
-		width: 4rem;
-		height: 4rem;
+		width: 3rem;
+		height: 3rem;
 		display:inline-block;
     background-color: #55A1B5;
     border-radius: 1.5rem;
-    margin-left: 2rem;
+    margin-left: 1rem;
 	}
 
 	.userName {
