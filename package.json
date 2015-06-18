@@ -23,7 +23,9 @@
   "dependencies": {
     "actionhero": "^11.2.4",
     "body-parser": "^1.13.1",
+    "bootstrap-less": "^3.3.8",
     "express": "^4.12.4",
+    "highlight.js": "^8.6.0",
     "jquery": "^2.1.4",
     "marked": "^0.3.3",
     "react": "^0.13.3",
