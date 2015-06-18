@@ -8,29 +8,42 @@ var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
 var pin = require('./plugins/jquery.pin.js');
-var ZeroClipboard = require('zeroclipboard');
-var clientClipboard = new ZeroClipboard( document.getElementById("copy-button") );
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+
+var thisUser = '';
 
 var SPLIT_CHARS = "//";
 
-function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
-}
-
 var Application = React.createClass({
+	getInitialState: function() {
+		return {username: ''};
+	},
+	handleSubmit: function(e) {
+		e.preventDefault();
+		thisUser = React.findDOMNode(this.refs.username).value.trim();
+		React.findDOMNode(this.refs.username).value = '';
+		this.setState({username: thisUser});
+	},
 	render: function () {
-		return (
-			<div className = "Application row">
-  			<SidePanel/>
-  			<ChatBox url="initial" pollInterval={2000}/>
-			</div>
-		);
+		if (thisUser === '') {
+			return (
+				<div className = "Application">
+					<form className="usernameForm" onSubmit={this.handleSubmit}>
+						<input type="text" placeholder="What's your name?" className="usernameField" ref="username"/>
+						<button type="submit">Ok</button>
+					</form>
+				</div>
+			);
+		} else {
+			return (
+				<div className = "Application row">
+	  			<SidePanel/>
+	  			<ChatBox url="initial" pollInterval={2000}/>
+				</div>
+			);
+		}
 	}
 });
 
@@ -102,7 +115,7 @@ var ChatList = React.createClass({
 var ChatForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
-    var author = "Lebron Jamez";
+    var author = thisUser;
     var text = React.findDOMNode(this.refs.text).value.trim();
     if (!text || !author || text == "//") {
       return;
@@ -116,6 +129,14 @@ var ChatForm = React.createClass({
     React.findDOMNode(this.refs.text).value = '';
     return;
   },
+	componentDidMount: function() {
+		$('textarea').keydown(function(e) {
+			if (e.keyCode == 13 && !e.shiftKey) {
+				$('.message-send').click();
+				e.preventDefault();
+			}
+		});
+	},
   render: function() {
     return (
       <form className="chatForm row" onSubmit={this.handleSubmit}>
@@ -131,7 +152,7 @@ var Message = React.createClass({
 		this.setState({pinned: true});
 	},
 	getInitialState: function() {
-		return {id: guid(), pinned: false};
+		return {pinned: false};
 	},
 	render: function() {
     emojione.ascii = true; //jus making sure
@@ -187,19 +208,6 @@ var Message = React.createClass({
     );
   },
   componentDidMount: function() {
-		if (!this.state.clipboard) {
-			console.log('getting there');
-			this.setState({
-				clipboard: new ZeroClipboard(document.getElementById(this.state.id)),
-				pinned: this.state.pinned,
-				id: this.state.id
-			});
-			this.state.clipboard.on('ready', function(readyEvent) {
-				this.state.clipboard.on('aftercopy', function(event) {
-					alert('Copied: ' + event.data['text/plain']);
-				})
-			});
-		}
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
@@ -208,17 +216,6 @@ var Message = React.createClass({
 });
 
 React.render(
-  <Application />,
-  document.getElementById('content')
+	<Application/>,
+	document.getElementById('content')
 );
-
-$("textarea").keydown(function(e){
-  // Enter was pressed without shift key
-  if (e.keyCode == 13 && !e.shiftKey)
-  {
-      // fire the submit event
-      $(".message-send").click();
-      // prevent default behavior
-      e.preventDefault();
-  }
-});
