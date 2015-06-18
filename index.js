@@ -3,7 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
-var messages = []
+var messages = [];
+var users = [];
 
 app.use(express.static('.public'));
 app.use(bodyParser.json());
@@ -16,12 +17,23 @@ app.get('/initial', function(request, response) {
   response.send(JSON.stringify(messages));
 });
 
+app.get('/users', function(request, response) {
+  response.setHeader('Content-Type', 'application/json');
+  response.send(JSON.stringify(users));
+});
+
 io.on('connection', function(socket){
   console.log('a user connected');
   socket.on('chat message', function(message) {
     console.log('Got a message!');
     messages.push(message);
     socket.broadcast.emit('chat message', message);
+  });
+
+  socket.on('new participant', function(name) {
+    console.log('Got a new user!');
+    users.push(name);
+    socket.broadcast.emit('new participant', name);
   });
 
   socket.on('disconnect', function(){
