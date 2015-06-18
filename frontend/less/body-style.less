@@ -8,7 +8,6 @@ body {
 
 header {
   background-color: @dark-gray;
-  border-bottom: 4px solid @logo-red;
   height: 7vh;
 }
 
@@ -17,4 +16,53 @@ header {
   width: 100px;
   background-image: url('../images/logo.png');
   background-size: cover;
+}
+
+.gap {
+  margin-top: 1rem;
+}
+
+.init-container {
+  margin-top: 30vh;
+  text-align: center;
+
+  img {
+    margin-bottom: 4rem;
+    height: 100px;
+    width: auto;
+  }
+
+  form {
+    margin: 0 auto;
+    height: 5rem;
+  
+    input[type="text"] {
+      background: #F5F5F5;
+      border: none;
+      font-size: 2rem;
+      padding: 1rem;
+      height: 5rem;
+      resize: none;
+      transition: 0.8s;
+      &:focus {
+        background: #EEE;
+        outline: none;
+      }
+    }
+    button {
+      background-color: #66B350;
+      border: none;
+      color: #FFF;
+      font-size: 2rem;
+      height: 5rem;
+      padding: 0 2rem;
+      text-transform: uppercase;
+      transition: 0.25s;
+
+      &:hover {
+        background-color: #57A142;
+      }
+    }
+  }
+
 }

@@ -1,5 +1,6 @@
 .ChatBox {
   background: #FFF;
+  border-top: 4px solid @logo-red;
   font-family: "Droid Sans", sans-serif;
   padding-left: 0;
 }
@@ -104,13 +105,13 @@ pre {
 }
 
 textarea {
-  background: #EEE;
+  background: #F5F5F5;
   border: none;
   padding-top: 1.5rem;
   resize: none;
   transition: 0.8s;
   &:focus {
-    background: #E3E3E3;
+    background: #EEE;
     outline: none;
   }
 }
@@ -150,5 +151,25 @@ input[type="button"], input[type="reset"], input[type="submit"] {
     background-color: #FFF;
     border: 1px solid @dark-gray;
     color: #333;
+  }
+  &:focus {
+    outline: none;
+  }
+}
+
+.pin-button {
+  background: none;
+  border: none;
+  color: #CCC;
+  margin-top: 1rem;
+
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    color: #AAA;
+  }
+  i {
+    text-align: center;
   }
 }

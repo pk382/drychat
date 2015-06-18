@@ -60,10 +60,13 @@ var Application = React.createClass({
 		if (this.state.username === '') {
 			return (
 				<div className = "Application">
-					<form className="usernameForm" onSubmit={this.handleSubmit}>
-						<input type="text" placeholder="What's your name?" className="usernameField" ref="username"/>
-						<button type="submit">Ok</button>
-					</form>
+          <div className="init-container">
+            <img src="images/splash.png" />
+  					<form className="usernameForm" onSubmit={this.handleSubmit}>
+  						<input type="text" placeholder="What's your name?" className="usernameField" ref="username"/>
+  						<button type="submit">Go</button>
+  					</form>
+          </div>
 				</div>
 			);
 		} else {
@@ -204,6 +207,7 @@ var Message = React.createClass({
     var rawMarkup = emojione.toImage(this.props.children.toString());
     rawMarkup = marked(rawMarkup, {sanitize: false});
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
+    if (!this.props.sameAuthor) generatedClass += " gap";
 		if (this.state.pinned) {
 			generatedClass += ' pinned';
 		}
@@ -225,10 +229,7 @@ var Message = React.createClass({
 									</pre>
                 </div>
                 <div className="action-buttons">
-                  <button className="action-button" onClick={this.pinMessage} title="Pin">
-                    <i className="fa fa-thumb-tack"></i>
-                  </button>
-                  <button className="action-button" id={"copyBtn-"+this.state.id} title="Copy to Clipboard">
+                  <button className="action-button select-all" data-id={this.state.id} title="Select All">
                     <i className="fa fa-copy"></i>
                   </button>
                   <button className="action-button" title="Search">
@@ -247,10 +248,13 @@ var Message = React.createClass({
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
-        <div className="message col-xs-9">
+        <div className="message col-xs-8">
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
+        <button className="pin-button col-xs-1" onClick={this.pinMessage} title="Pin">
+          <i className="fa fa-thumb-tack"></i>
+        </button>
       </div>
     );
   },
@@ -286,3 +290,8 @@ function select_all(el) {
       textRange.select();
   }
 }
+
+$(".content").on("click", ".action-button", function(e) {
+  console.log("yo");
+  console.log(e.attr('data-id'));
+});
