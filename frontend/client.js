@@ -1,9 +1,25 @@
 var React = require('react');
 var marked = require('marked');
 var $ = require('jquery');
+window.jQuery = $;
 var hljs = require('highlight.js')
 var io = require('socket.io-client');
 var socket = io.connect();
+var SidePanel = require('./sidePanel.js');
+var bootstrap = require('bootstrap-less/js/bootstrap.js');
+
+var SPLIT_CHARS = "//";
+
+var Application = React.createClass({
+	render: function () {
+		return (
+			<div className = "Application row">
+  			<SidePanel/>
+  			<ChatBox url="initial" pollInterval={2000}/>
+			</div>
+			);
+	}
+});
 
 var ChatBox = React.createClass({
   loadMessagesFromServer: function() {
@@ -42,7 +58,7 @@ var ChatBox = React.createClass({
   },
   render: function() {
     return (
-      <div className="ChatBox">
+      <div className="ChatBox col-md-9">
         <ChatList data={this.state.data}/>
         <ChatForm onMessageSend={this.handleMessageSend}/>
       </div>
@@ -52,9 +68,12 @@ var ChatBox = React.createClass({
 
 var ChatList = React.createClass({
   render: function() {
+    var currentAuthor = "";
     var messageNodes = this.props.data.map(function(message) {
+      var sameAuthor = currentAuthor == message.author;
+      currentAuthor = message.author;
       return (
-        <Message msg={message}>
+        <Message msg={message} sameAuthor={sameAuthor}>
           {message.text}
         </Message>
       );
@@ -72,7 +91,7 @@ var ChatForm = React.createClass({
     e.preventDefault();
     var author = "Lebron Jamez";
     var text = React.findDOMNode(this.refs.text).value.trim();
-    if (!text || !author) {
+    if (!text || !author || text == "//") {
       return;
     }
     this.props.onMessageSend({author: author, text: text});
@@ -86,9 +105,9 @@ var ChatForm = React.createClass({
   },
   render: function() {
     return (
-      <form className="chatForm" onSubmit={this.handleSubmit}>
-        <textarea placeholder="Say something..." className="message-field" ref="text"/>
-        <input type="submit" value="Send" className="message-send" Send/>
+      <form className="chatForm row" onSubmit={this.handleSubmit}>
+        <textarea placeholder="Say something..." className="message-field col-xs-10" ref="text"/>
+        <input type="submit" value="Send" className="message-send col-xs-2" Send/>
       </form>
     );
   }
@@ -96,24 +115,26 @@ var ChatForm = React.createClass({
 
 var Message = React.createClass({
   render: function() {
+    var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
+    if (this.props.sameAuthor) {
+      authorBody = (<div className="author-container col-xs-3"></div>);
+    }
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
-    var generatedClass = this.props.msg.myself ? "message-container myself" : "message-container";
+    var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
 
-    var chunks = this.props.msg.text.split("//");
+    var ss = this.props.msg.text;
+    var chunks = ss.split(SPLIT_CHARS)
+    ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
     var code;
-    if (chunks.length > 1) {
+    if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
-      chunks.shift();
-      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: true})}} /><div className="codeblock"><pre><code>{chunks.join("")}</code></pre></div></div>);
+      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: true})}} /><div className="codeblock"><pre><code>{ss}</code></pre></div></div>);
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
     return (
-      <div className={generatedClass}>
-        <div className="author-container" style={{'borderColor': this.props.msg.color}}>
-          <div className="gravatar"></div>
-          <div className="author"><strong>{this.props.msg.author}</strong></div>
-        </div>
-        <div className="message">
+      <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
+        {authorBody}
+        <div className="message col-xs-9">
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
@@ -129,7 +150,7 @@ var Message = React.createClass({
 });
 
 React.render(
-  <ChatBox url="initial"/>,
+  <Application />,
   document.getElementById('content')
 );
 
