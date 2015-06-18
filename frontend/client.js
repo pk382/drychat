@@ -231,9 +231,6 @@ var Message = React.createClass({
 									</pre>
                 </div>
                 <div className="action-buttons">
-                  <button className="action-button" onClick={this.pinMessage} title="Pin">
-                    <i className="fa fa-thumb-tack"></i>
-                  </button>
                   <button className="action-button" id={"copyBtn-"+this.state.id} title="Copy to Clipboard">
                     <i className="fa fa-copy"></i>
                   </button>
@@ -253,9 +250,14 @@ var Message = React.createClass({
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
-        <div className="message col-xs-9">
+        <div className="message col-xs-8">
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
+        </div>
+        <div className="col-xs-1">
+          <button className="pin-button" onClick={this.pinMessage} title="Pin">
+            <i className="fa fa-thumb-tack"></i>
+          </button>
         </div>
       </div>
     );

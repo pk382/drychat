@@ -4,6 +4,9 @@
 	display: inline-block;
 	font-family: "Droid Sans", sans-serif;
 	height: 100%;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	text-overflow: ellipses;
 	padding-right: 0;
 
 	h3 {
@@ -17,7 +20,6 @@
 
 	@media only screen and (max-width : @small) {
 		height: 15rem;
-		overflow: scroll;
 	}
 }
 
@@ -40,7 +42,8 @@
 		width: 3rem;
 		height: 3rem;
 		display:inline-block;
-    background-color: #55A1B5;
+    background-image: url('../images/pf.png');
+    background-size: cover;
     border-radius: 1.5rem;
     margin-left: 1rem;
 	}
