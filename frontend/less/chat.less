@@ -10,6 +10,10 @@
   width: 100%;
   overflow-y: scroll;
   padding: 2vh 0;
+
+  @media only screen and (max-width : @small) {
+    height: (75vh-@formheight);
+  }
 }
 
 .message-container {
@@ -109,10 +113,14 @@ textarea {
   border: none;
   padding-top: 1.5rem;
   resize: none;
-  transition: 0.8s;
   &:focus {
+    transition: 0.8s;
     background: #EEE;
     outline: none;
+  }
+
+  @media only screen and (max-width : @small) {
+    padding-left: 3rem !important;
   }
 }
 
@@ -123,9 +131,9 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   font-size: 2rem;
   height: 100%;
   text-transform: uppercase;
-  transition: 0.25s;
 
   &:hover {
+    transition: 0.25s;
     background-color: #57A142;
   }
 }
