@@ -8,8 +8,20 @@ var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
 var pin = require('./plugins/jquery.pin.js');
+var ZeroClipboard = require('zeroclipboard');
+var clientClipboard = new ZeroClipboard( document.getElementById("copy-button") );
 
 var SPLIT_CHARS = "//";
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
 
 var Application = React.createClass({
 	render: function () {
@@ -18,7 +30,7 @@ var Application = React.createClass({
   			<SidePanel/>
   			<ChatBox url="initial" pollInterval={2000}/>
 			</div>
-			);
+		);
 	}
 });
 
@@ -118,11 +130,8 @@ var Message = React.createClass({
 	pinMessage: function() {
 		this.setState({pinned: true});
 	},
-	copyCode: function() {
-
-	},
 	getInitialState: function() {
-		return {pinned: false};
+		return {id: guid(), pinned: false};
 	},
 	render: function() {
     emojione.ascii = true; //jus making sure
@@ -151,11 +160,10 @@ var Message = React.createClass({
 						<pre>
 							<code>{ss}</code>
 						</pre>
-						<button onClick={this.copyCode}>Copy</button>
+						<button id={this.state.id}>Copy</button>
 					</div>
 				</div>
 			);
-      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} /><div className="codeblock"><pre><code>{ss}</code></pre></div></div>);
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
 
@@ -170,6 +178,19 @@ var Message = React.createClass({
     );
   },
   componentDidMount: function() {
+		if (!this.state.clipboard) {
+			console.log('getting there');
+			this.setState({
+				clipboard: new ZeroClipboard(document.getElementById(this.state.id)),
+				pinned: this.state.pinned,
+				id: this.state.id
+			});
+			this.state.clipboard.on('ready', function(readyEvent) {
+				this.state.clipboard.on('aftercopy', function(event) {
+					alert('Copied: ' + event.data['text/plain']);
+				})
+			});
+		}
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
