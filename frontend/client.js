@@ -164,9 +164,6 @@ var Message = React.createClass({
 	getInitialState: function() {
 		return {id: guid(), pinned: false};
 	},
-	selectAll: function() {
-
-	},
 	render: function() {
     emojione.ascii = true; //jus making sure
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
@@ -198,7 +195,7 @@ var Message = React.createClass({
                   <button className="action-button" onClick={this.pinMessage} title="Pin">
                     <i className="fa fa-thumb-tack"></i>
                   </button>
-                  <button className="action-button" id={"copyBtn"} title="Copy to Clipboard">
+                  <button className="action-button" id="copyBtn" title="Copy to Clipboard">
                     <i className="fa fa-copy"></i>
                   </button>
                   <button className="action-button" title="Search">
