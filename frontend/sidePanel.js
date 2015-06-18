@@ -6,7 +6,7 @@ var sidePanel = React.createClass({
 		return (
 			<div className = "sidePanel col-md-3">
 				<h1>Participants</h1>
-				<UsersList/>
+				<UsersList users={this.props.users}/>
 			</div>
 		);
 	}
@@ -23,9 +23,13 @@ var NavSection = React.createClass({
 
 var UsersList = React.createClass({
 	render: function() {
+		console.log(this.props.users);
+		var userNodes = this.props.users.map(function(user) {
+			return <User>{user}</User>
+		})
 		return (
 				<div className = "usersList col-md-12">
-				<User/>
+					{userNodes}
 				</div>
 		);
 	}
@@ -37,7 +41,7 @@ var User = React.createClass({
 			<div className = "userContainer" style={{'borderColor':'#660000'}}>
 				<div className = "gravatar"></div>
 				<div className = "userName"><strong>
-					LeBron James
+					{this.props.children}
 				</strong></div>
 				</div>
 		);

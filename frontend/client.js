@@ -12,8 +12,6 @@ var ReactRouter = require('react-router');
 var Router = ReactRouter.Router;
 var Route = ReactRouter.Route;
 
-var thisUser = '';
-
 var SPLIT_CHARS = "//";
 
 function guid() {
@@ -32,12 +30,34 @@ var Application = React.createClass({
 	},
 	handleSubmit: function(e) {
 		e.preventDefault();
-		thisUser = React.findDOMNode(this.refs.username).value.trim();
+		var thisUser = React.findDOMNode(this.refs.username).value.trim();
 		React.findDOMNode(this.refs.username).value = '';
-		this.setState({username: thisUser});
+		socket.emit('new participant', thisUser);
+		var newUsers = this.state.users.concat([thisUser]);
+		this.setState({username: thisUser, users: newUsers});
+	},
+	loadInitialUsers: function() {
+		$.ajax({
+      url: 'users',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({username: this.state.username, users: data})
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('users', status, err.toString());
+      }.bind(this)
+    });
+	},
+	handleNewParticipant: function(user) {
+		this.setState({username: this.state.username, users: this.state.users.concat([user])});
+	},
+	componentDidMount: function() {
+		this.loadInitialUsers();
+		socket.on('new participant', this.handleNewParticipant);
 	},
 	render: function () {
-		if (thisUser === '') {
+		if (this.state.username === '') {
 			return (
 				<div className = "Application">
           <div className="init-container">
@@ -52,8 +72,8 @@ var Application = React.createClass({
 		} else {
 			return (
 				<div className = "Application row">
-	  			<SidePanel/>
-					<ChatBox url="initial" pollInterval={2000}/>
+	  			<SidePanel users={this.state.users}/>
+					<ChatBox author={this.state.username} url="initial" pollInterval={2000}/>
 				</div>
 			);
 		}
@@ -99,7 +119,7 @@ var ChatBox = React.createClass({
     return (
       <div className="ChatBox col-md-9">
         <ChatList data={this.state.data}/>
-        <ChatForm onMessageSend={this.handleMessageSend}/>
+        <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
       </div>
     );
   }
@@ -128,7 +148,7 @@ var ChatList = React.createClass({
 var ChatForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
-    var author = thisUser;
+    var author = this.props.author;
     var text = React.findDOMNode(this.refs.text).value.trim();
     if (!text || !author || text == "//") {
       return;
@@ -166,9 +186,6 @@ var Message = React.createClass({
 	},
 	getInitialState: function() {
 		return { pinned: false};
-	},
-	selectAll: function() {
-
 	},
 	render: function() {
 		this.state.id = guid();
@@ -213,11 +230,11 @@ var Message = React.createClass({
                   </button>
                 </div>
               </div>);
-			
+
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
     console.log("idlater: "+ this.state.id);
-    
+
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
