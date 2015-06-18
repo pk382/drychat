@@ -141,6 +141,7 @@ var Message = React.createClass({
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
+        <button onClick={this.pinMessage}>Pin</button>
       </div>
     );
   },
