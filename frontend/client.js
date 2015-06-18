@@ -2,22 +2,58 @@ var React = require('react');
 var marked = require('marked');
 var $ = require('jquery');
 window.jQuery = $;
-var hljs = require('highlight.js')
+var hljs = require('highlight.js');
 var io = require('socket.io-client');
 var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
+var pin = require('./plugins/jquery.pin.js');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+
+var thisUser = '';
 
 var SPLIT_CHARS = "//";
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+
 var Application = React.createClass({
+	getInitialState: function() {
+		return {username: ''};
+	},
+	handleSubmit: function(e) {
+		e.preventDefault();
+		thisUser = React.findDOMNode(this.refs.username).value.trim();
+		React.findDOMNode(this.refs.username).value = '';
+		this.setState({username: thisUser});
+	},
 	render: function () {
-		return (
-			<div className = "Application row">
-  			<SidePanel/>
-  			<ChatBox url="initial" pollInterval={2000}/>
-			</div>
+		if (thisUser === '') {
+			return (
+				<div className = "Application">
+					<form className="usernameForm" onSubmit={this.handleSubmit}>
+						<input type="text" placeholder="What's your name?" className="usernameField" ref="username"/>
+						<button type="submit">Ok</button>
+					</form>
+				</div>
 			);
+		} else {
+			return (
+				<div className = "Application row">
+	  			<SidePanel/>
+					<ChatBox url="initial" pollInterval={2000}/>
+				</div>
+			);
+		}
 	}
 });
 
@@ -89,7 +125,7 @@ var ChatList = React.createClass({
 var ChatForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
-    var author = "Lebron Jamez";
+    var author = thisUser;
     var text = React.findDOMNode(this.refs.text).value.trim();
     if (!text || !author || text == "//") {
       return;
@@ -103,6 +139,14 @@ var ChatForm = React.createClass({
     React.findDOMNode(this.refs.text).value = '';
     return;
   },
+	componentDidMount: function() {
+		$('textarea').keydown(function(e) {
+			if (e.keyCode == 13 && !e.shiftKey) {
+				$('.message-send').click();
+				e.preventDefault();
+			}
+		});
+	},
   render: function() {
     return (
       <form className="chatForm row" onSubmit={this.handleSubmit}>
@@ -114,7 +158,17 @@ var ChatForm = React.createClass({
 });
 
 var Message = React.createClass({
-  render: function() {
+	pinMessage: function() {
+		this.setState({id: this.state.id, pinned: true});
+	},
+	getInitialState: function() {
+		return { pinned: false};
+	},
+	selectAll: function() {
+
+	},
+	render: function() {
+		this.state.id = guid();
     emojione.ascii = true; //jus making sure
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
@@ -123,21 +177,28 @@ var Message = React.createClass({
     var rawMarkup = emojione.toImage(this.props.children.toString());
     rawMarkup = marked(rawMarkup, {sanitize: false});
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
+		if (this.state.pinned) {
+			generatedClass += ' pinned';
+		}
 
     var ss = this.props.msg.text;
     var chunks = ss.split(SPLIT_CHARS)
     ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
     var code;
+    console.log("idbfr: "+ this.state.id);
+
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
       normalText = emojione.toImage(normalText);
       code = (<div>
                 <span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} />
                 <div className="codeblock">
-                  <pre><code>{ss}</code></pre>
+                  <pre>
+										<code id={"code-"+this.state.id} ref="code">{ss}</code>
+									</pre>
                 </div>
                 <div className="action-buttons">
-                  <button className="action-button" title="Copy to Clipboard">
+                  <button className="action-button" id={"copyBtn-"+this.state.id} title="Select All">
                     <i className="fa fa-copy"></i>
                   </button>
                   <button className="action-button" title="Search">
@@ -148,8 +209,11 @@ var Message = React.createClass({
                   </button>
                 </div>
               </div>);
+			
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
+    console.log("idlater: "+ this.state.id);
+    
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
@@ -167,21 +231,29 @@ var Message = React.createClass({
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
+		$('.pinned').pin({containerSelector: '.ChatBox'});
+		var msgId = this.state.id;
+		$("#copyBtn-"+this.state.id).click(function(){
+  		select_all((document.getElementById("code-"+msgId)));
+  	});
   }
 });
 
 React.render(
-  <Application />,
-  document.getElementById('content')
+	<Application/>,
+	document.getElementById('content')
 );
 
-$("textarea").keydown(function(e){
-  // Enter was pressed without shift key
-  if (e.keyCode == 13 && !e.shiftKey)
-  {
-      // fire the submit event
-      $(".message-send").click();
-      // prevent default behavior
-      e.preventDefault();
+function select_all(el) {
+  if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+  } else if (typeof document.selection != "undefined" && typeof document.body.createTextRange != "undefined") {
+      var textRange = document.body.createTextRange();
+      textRange.moveToElementText(el);
+      textRange.select();
   }
-});
+}
