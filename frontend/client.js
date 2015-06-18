@@ -115,11 +115,13 @@ var ChatForm = React.createClass({
 
 var Message = React.createClass({
   render: function() {
+    emojione.ascii = true; //jus making sure
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
       authorBody = (<div className="author-container col-xs-3"></div>);
     }
-    var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+    var rawMarkup = emojione.toImage(this.props.children.toString());
+    rawMarkup = marked(rawMarkup, {sanitize: false});
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
 
     var ss = this.props.msg.text;
@@ -128,7 +130,8 @@ var Message = React.createClass({
     var code;
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
-      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: true})}} /><div className="codeblock"><pre><code>{ss}</code></pre></div></div>);
+      normalText = emojione.toImage(normalText);
+      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} /><div className="codeblock"><pre><code>{ss}</code></pre></div></div>);
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
     return (
