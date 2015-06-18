@@ -5,8 +5,8 @@ var sidePanel = React.createClass({
 	render: function() {
 		return (
 			<div className = "sidePanel col-md-3">
-				<h1>Rooms</h1>
-				<RoomsList/>
+				<h1>Participants</h1>
+				<UsersList/>
 			</div>
 		);
 	}
@@ -17,32 +17,30 @@ var NavSection = React.createClass({
 		return (
 			<div className = "navSection">
 			</div>
-			)
+		);
 	}
 });
 
-var RoomsList = React.createClass({
+var UsersList = React.createClass({
 	render: function() {
 		return (
-				<div className = "roomsList">
-				<Room/>
+				<div className = "usersList col-md-12">
+				<User/>
 				</div>
 		);
 	}
 });
 
-var Room = React.createClass({
+var User = React.createClass({
 	render: function() {
 		return (
-			<div className = "roomContainer" style={{'borderColor':'#660000'}}>
-				<div className = "roomTitle">
-					Room 1
+			<div className = "userContainer" style={{'borderColor':'#660000'}}>
+				<div className = "gravatar"></div>
+				<div className = "userName"><strong>
+					Lawrance Luk
+				</strong></div>
 				</div>
-					<div className = "personIcon">	
-					</div>
-					<div className = "participantNum">3</div>
-			</div>
-			);
+		);
 	}
 });
 
