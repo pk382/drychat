@@ -1,10 +1,11 @@
 .ChatBox {
   background: #FFF;
   font-family: "Droid Sans", sans-serif;
+  padding-left: 0;
 }
 
 .chatList {
-  height: (92vh-@formheight);
+  height: (93vh-@formheight);
   width: 100%;
   overflow-y: scroll;
   padding: 2vh 0;
@@ -90,6 +91,10 @@ pre {
   width: 100%;
 }
 
+.chatForm.row {
+  margin-left: 0;
+}
+
 .message-field {
   text-align: top;
   height: 100%;
@@ -99,5 +104,10 @@ pre {
 }
 
 input[type="button"], input[type="reset"], input[type="submit"] {
+  background-color: #66B350;
+  border: none;
+  color: #FFF;
+  font-size: 2rem;
   height: 100%;
+  text-transform: uppercase;
 }
