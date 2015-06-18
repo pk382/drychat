@@ -177,6 +177,16 @@ var ChatForm = React.createClass({
   }
 });
 
+var SelectAllButton = React.createClass({
+  render: function() {
+    return (
+      <button onClick={this.handleClick} className="action-button" id={"copyBtn-"+this.state.id} title="Copy to Clipboard">
+        <i className="fa fa-copy"></i>
+      </button>
+    )
+  }
+})
+
 var Message = React.createClass({
 	pinMessage: function() {
 		this.setState({id: this.state.id, pinned: true});
