@@ -16,6 +16,16 @@ var thisUser = '';
 
 var SPLIT_CHARS = "//";
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+
 var Application = React.createClass({
 	getInitialState: function() {
 		return {username: ''};
@@ -149,10 +159,13 @@ var ChatForm = React.createClass({
 
 var Message = React.createClass({
 	pinMessage: function() {
-		this.setState({pinned: true});
+		this.setState({id: this.state.id, pinned: true});
 	},
 	getInitialState: function() {
-		return {pinned: false};
+		return {id: guid(), pinned: false};
+	},
+	selectAll: function() {
+
 	},
 	render: function() {
     emojione.ascii = true; //jus making sure
@@ -177,13 +190,15 @@ var Message = React.createClass({
       code = (<div>
                 <span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} />
                 <div className="codeblock">
-                  <pre><code>{ss}</code></pre>
+                  <pre>
+										<code ref="code">{ss}</code>
+									</pre>
                 </div>
                 <div className="action-buttons">
                   <button className="action-button" onClick={this.pinMessage} title="Pin">
                     <i className="fa fa-thumb-tack"></i>
                   </button>
-                  <button className="action-button" id="copyBtn" title="Copy to Clipboard">
+                  <button className="action-button" id={"copyBtn"} title="Copy to Clipboard">
                     <i className="fa fa-copy"></i>
                   </button>
                   <button className="action-button" title="Search">
