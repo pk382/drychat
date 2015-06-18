@@ -8,7 +8,6 @@ var io = require('socket.io-client');
 var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
-window.ZeroClipboard = require('zeroclipboard');
 var ReactZeroClipboard = require('react-zeroclipboard');
 
 var SPLIT_CHARS = "//";
