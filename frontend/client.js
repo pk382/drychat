@@ -1,3 +1,4 @@
+window.require = require;
 var React = require('react');
 var marked = require('marked');
 var $ = require('jquery');
@@ -7,10 +8,8 @@ var io = require('socket.io-client');
 var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
-var pin = require('./plugins/jquery.pin.js');
-var ReactRouter = require('react-router');
-var Router = ReactRouter.Router;
-var Route = ReactRouter.Route;
+window.ZeroClipboard = require('zeroclipboard');
+var ReactZeroClipboard = require('react-zeroclipboard');
 
 var SPLIT_CHARS = "//";
 
@@ -180,19 +179,6 @@ var ChatForm = React.createClass({
   }
 });
 
-var SelectAllButton = React.createClass({
-  handleClick: function() {
-
-  },
-  render: function() {
-    return (
-      <button onClick={this.handleClick} className="action-button" title="Copy to Clipboard">
-        <i className="fa fa-copy"></i>
-      </button>
-    )
-  }
-})
-
 var Message = React.createClass({
 	pinMessage: function() {
 		this.setState({id: this.state.id, pinned: true});
@@ -234,9 +220,11 @@ var Message = React.createClass({
                   <button className="action-button" onClick={this.pinMessage} title="Pin">
                     <i className="fa fa-thumb-tack"></i>
                   </button>
-                  <button className="action-button" id={"copyBtn-"+this.state.id} title="Copy to Clipboard">
-                    <i className="fa fa-copy"></i>
-                  </button>
+                  <ReactZeroClipboard text={ss}>
+                    <button className="action-button" id={"copyBtn-"+this.state.id} title="Copy to Clipboard">
+                      <i className="fa fa-copy"></i>
+                    </button>
+                  </ReactZeroClipboard>
                   <button className="action-button" title="Search">
                     <i className="fa fa-search"></i>
                   </button>
@@ -264,12 +252,6 @@ var Message = React.createClass({
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
-		$('.pinned').pin({containerSelector: '.ChatBox'});
-		var msgId = this.state.id;
-		$("#copyBtn-"+this.state.id).click(function(){
-			console.log("copy btn: "+document.getElementById("code-"+msgId));
-  		select_all((document.getElementById("code-"+msgId)));
-  	});
   }
 });
 
