@@ -31,14 +31,10 @@
       height: 3rem;
       vertical-align: middle;
       border-radius: 1.5rem;
-      background-color: #55A1B5;
+      background-image: url('../images/pf.png');
+      background-size: cover;
       display: inline-block;
-      margin-left: 0.5rem;
-
-      @media only screen and (max-width : @small) {
-        width: 1.5rem;
-        height: 1.5rem;
-      }
+      margin-left: 1.5rem;
 
       @media only screen and (max-width : @mobile) {
         display: none;
@@ -73,6 +69,10 @@
 .message-container.row {
   margin-left: 0;
   margin-right: 0;
+
+  @media only screen and (max-width : @small) {
+    margin-left: 1.5rem;
+  } 
 }
 
 .message-container.myself {
@@ -169,13 +169,15 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   background: none;
   border: none;
   color: #CCC;
-  margin-top: 1rem;
+  margin-top: 0.9rem;
 
   &:focus {
     outline: none;
   }
   &:hover {
     color: #AAA;
+    margin-top: 1.1rem;
+    transition: 0.3s;
   }
   i {
     text-align: center;
