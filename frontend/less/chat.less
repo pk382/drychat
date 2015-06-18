@@ -34,12 +34,7 @@
       background-image: url('../images/pf.png');
       background-size: cover;
       display: inline-block;
-      margin-left: 0.5rem;
-
-      @media only screen and (max-width : @small) {
-        width: 1.5rem;
-        height: 1.5rem;
-      }
+      margin-left: 1.5rem;
 
       @media only screen and (max-width : @mobile) {
         display: none;
@@ -74,6 +69,10 @@
 .message-container.row {
   margin-left: 0;
   margin-right: 0;
+
+  @media only screen and (max-width : @small) {
+    margin-left: 1.5rem;
+  } 
 }
 
 .message-container.myself {
