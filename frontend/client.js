@@ -2,11 +2,12 @@ var React = require('react');
 var marked = require('marked');
 var $ = require('jquery');
 window.jQuery = $;
-var hljs = require('highlight.js')
+var hljs = require('highlight.js');
 var io = require('socket.io-client');
 var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
+var pin = require('./plugins/jquery.pin.js');
 
 var SPLIT_CHARS = "//";
 
@@ -114,13 +115,25 @@ var ChatForm = React.createClass({
 });
 
 var Message = React.createClass({
-  render: function() {
+	pinMessage: function() {
+		this.setState({pinned: true});
+	},
+	copyCode: function() {
+
+	},
+	getInitialState: function() {
+		return {pinned: false};
+	},
+	render: function() {
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
       authorBody = (<div className="author-container col-xs-3"></div>);
     }
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
+		if (this.state.pinned) {
+			generatedClass += ' pinned';
+		}
 
     var ss = this.props.msg.text;
     var chunks = ss.split(SPLIT_CHARS)
@@ -128,9 +141,20 @@ var Message = React.createClass({
     var code;
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
-      code = (<div><span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: true})}} /><div className="codeblock"><pre><code>{ss}</code></pre></div></div>);
+      code = (
+				<div>
+					<span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: true})}} />
+					<div className="codeblock">
+						<pre>
+							<code>{ss}</code>
+						</pre>
+						<button onClick={this.copyCode}>Copy</button>
+					</div>
+				</div>
+			);
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
+
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
         {authorBody}
@@ -138,7 +162,6 @@ var Message = React.createClass({
           {messageBody}
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
-        <button onClick={this.pinMessage}>Pin</button>
       </div>
     );
   },
@@ -146,6 +169,7 @@ var Message = React.createClass({
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
+		$('.pinned').pin({containerSelector: '.ChatBox'});
   }
 });
 
