@@ -25,7 +25,7 @@ var UsersList = React.createClass({
 	render: function() {
 		console.log(this.props.users);
 		var userNodes = this.props.users.map(function(user) {
-			return <User>{user}</User>
+			return <User>{user.name}</User>
 		})
 		return (
 				<div className = "usersList">

@@ -14,6 +14,15 @@ var emoji = require('markdown-it-emoji');
 // enable emojis
 md.use(emoji , []);
 
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 var SPLIT_CHARS = "``";
 var historyMsgs = [];
 var prev = 0;
@@ -36,8 +45,9 @@ var Application = React.createClass({
 		e.preventDefault();
 		var thisUser = React.findDOMNode(this.refs.username).value.trim();
 		React.findDOMNode(this.refs.username).value = '';
-		socket.emit('new participant', thisUser);
-		var newUsers = this.state.users.concat([thisUser]);
+    var newUser = {name: thisUser, color: getRandomColor()};
+		socket.emit('new participant', newUser);
+		var newUsers = this.state.users.concat([newUser]);
 		this.setState({username: thisUser, users: newUsers});
 	},
 	loadInitialUsers: function() {
