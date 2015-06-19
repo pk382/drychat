@@ -1,6 +1,6 @@
 window.require = require;
 var React = require('react');
-var marked = require('marked');
+//var marked = require('marked');
 var $ = require('jquery');
 window.jQuery = $;
 var hljs = require('highlight.js');
@@ -9,6 +9,10 @@ var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
 var ReactZeroClipboard = require('react-zeroclipboard');
+var md = require('markdown-it')();
+var emoji = require('markdown-it-emoji');
+// enable emojis
+md.use(emoji , []);
 
 var SPLIT_CHARS = "//";
 
@@ -187,13 +191,13 @@ var Message = React.createClass({
 	},
 	render: function() {
 		this.state.id = guid();
-    emojione.ascii = true; //jus making sure
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
       authorBody = (<div className="author-container col-xs-3"></div>);
     }
-    var rawMarkup = emojione.toImage(this.props.children.toString());
-    rawMarkup = marked(rawMarkup, {sanitize: false});
+
+    var rawMarkup = md.render(this.props.children.toString());
+
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
 		if (this.state.pinned) {
 			generatedClass += ' pinned';
@@ -207,9 +211,8 @@ var Message = React.createClass({
 
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
-      normalText = emojione.toImage(normalText);
       code = (<div>
-                <span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} />
+                <span dangerouslySetInnerHTML={{__html: md.render(normalText)}} />
                 <div className="codeblock">
                   <pre>
 										<code id={"code-"+this.state.id} ref="code">{ss}</code>
