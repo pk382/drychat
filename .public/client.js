@@ -190,7 +190,7 @@ var ChatList = React.createClass({displayName: "ChatList",
     var currentAuthor = "";
     var onMessagePin = this.props.onMessagePin;
     var onMessageSend = this.props.onMessageSend;
-    console.log(this.props.data);
+
     var messageNodes = this.props.data.map(function(message) {
       var sameAuthor = currentAuthor == message.author;
       currentAuthor = message.author;
@@ -217,10 +217,6 @@ var ChatForm = React.createClass({displayName: "ChatForm",
       return;
     }
     this.props.onMessageSend({author: author, text: text});
-    var cc = $(".chatList");
-    cc.stop().animate({
-      scrollTop: cc[0].scrollHeight
-    }, 500);
     //React.findDOMNode(this.refs.author).value = '';
     React.findDOMNode(this.refs.text).value = '';
     return;
@@ -416,9 +412,9 @@ var ChatForm = React.createClass({displayName: "ChatForm",
 var SearchResultsBox = React.createClass({displayName: "SearchResultsBox",
   render: function() {
     var footer;
-    console.log(this.props.results);
     if (this.props.results.length > 0)
       footer = (React.createElement("div", {className: "search-attribution"}, "Top 3 Stack Overflow results fetched via Google."));
+    else if (this.props.searched) footer = (React.createElement("h4", null, "No results found."));
     var searchResultNodes = this.props.results.slice(0, 3).map(function(result) {
       return (
         React.createElement("div", {className: "searchResult"}, 
@@ -453,7 +449,6 @@ var Message = React.createClass({displayName: "Message",
   },
   search: function() {
     var query = $('#code-' + this.state.id).text();
-    console.log(query);
     var key = "AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q";
     var cx = '005775816924496801869:07j0tqhxcyy';
     var searchURL = "https://www.googleapis.com/customsearch/v1?key="+key+"&cx="+cx+"&site=stackoverflow.com&q=";
@@ -462,7 +457,7 @@ var Message = React.createClass({displayName: "Message",
       dataType: 'json',
       cache: false,
       success: function(data) {
-        this.setState({id: this.state.id, results: data.items});
+        this.setState({id: this.state.id, results: data.items, searched: true});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('search', status, err.toString());
@@ -524,7 +519,7 @@ var Message = React.createClass({displayName: "Message",
                     React.createElement("i", {className: "fa fa-pencil"})
                   )
                 ), 
-                React.createElement(SearchResultsBox, {results: this.state.results})
+                React.createElement(SearchResultsBox, {results: this.state.results ? this.state.results : [], searched: this.state.searched})
               ));
 
     }
@@ -547,6 +542,10 @@ var Message = React.createClass({displayName: "Message",
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
+    var cc = $(".chatList");
+    cc.stop().animate({
+      scrollTop: cc[0].scrollHeight
+    }, 500);
   }
 });
 

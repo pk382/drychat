@@ -6612,7 +6612,7 @@ pre {
   padding: 0;
 }
 .chatForm {
-  height: 15vh;
+  height: 14vh;
   width: 100%;
 }
 .chatForm textarea {
@@ -6797,7 +6797,7 @@ input[type="submit"]:hover {
   background: #FAFAFA;
   border-left: 0.4rem solid #cccccc;
   color: #333;
-  height: 3vh;
+  height: 4vh;
   padding-top: 0.6rem;
   width: 100%;
 }

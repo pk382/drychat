@@ -189,7 +189,7 @@ var ChatList = React.createClass({
     var currentAuthor = "";
     var onMessagePin = this.props.onMessagePin;
     var onMessageSend = this.props.onMessageSend;
-    console.log(this.props.data);
+
     var messageNodes = this.props.data.map(function(message) {
       var sameAuthor = currentAuthor == message.author;
       currentAuthor = message.author;
@@ -216,10 +216,6 @@ var ChatForm = React.createClass({
       return;
     }
     this.props.onMessageSend({author: author, text: text});
-    var cc = $(".chatList");
-    cc.stop().animate({
-      scrollTop: cc[0].scrollHeight
-    }, 500);
     //React.findDOMNode(this.refs.author).value = '';
     React.findDOMNode(this.refs.text).value = '';
     return;
@@ -415,9 +411,9 @@ var ChatForm = React.createClass({
 var SearchResultsBox = React.createClass({
   render: function() {
     var footer;
-    console.log(this.props.results);
     if (this.props.results.length > 0)
       footer = (<div className="search-attribution">Top 3 Stack Overflow results fetched via Google.</div>);
+    else if (this.props.searched) footer = (<h4>No results found.</h4>);
     var searchResultNodes = this.props.results.slice(0, 3).map(function(result) {
       return (
         <div className="searchResult">
@@ -452,7 +448,6 @@ var Message = React.createClass({
   },
   search: function() {
     var query = $('#code-' + this.state.id).text();
-    console.log(query);
     var key = "AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q";
     var cx = '005775816924496801869:07j0tqhxcyy';
     var searchURL = "https://www.googleapis.com/customsearch/v1?key="+key+"&cx="+cx+"&site=stackoverflow.com&q=";
@@ -461,7 +456,7 @@ var Message = React.createClass({
       dataType: 'json',
       cache: false,
       success: function(data) {
-        this.setState({id: this.state.id, results: data.items});
+        this.setState({id: this.state.id, results: data.items, searched: true});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('search', status, err.toString());
@@ -523,7 +518,7 @@ var Message = React.createClass({
                     <i className="fa fa-pencil"></i>
                   </button>
                 </div>
-                <SearchResultsBox results={this.state.results}/>
+                <SearchResultsBox results={this.state.results ? this.state.results : []} searched={this.state.searched}/>
               </div>);
 
     }
@@ -546,6 +541,10 @@ var Message = React.createClass({
     $('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
+    var cc = $(".chatList");
+    cc.stop().animate({
+      scrollTop: cc[0].scrollHeight
+    }, 500);
   }
 });
 
