@@ -335,6 +335,9 @@ var ChatForm = React.createClass({displayName: "ChatForm",
   handleInformationDesk: function() {
     $("#message-form").val($("#message-form").val()+" :information_desk_person:");
   },
+  handleFire: function() {
+    $("#message-form").val($("#message-form").val()+" :fire:");
+  },
   render: function() {
     return (
       React.createElement("div", null, 

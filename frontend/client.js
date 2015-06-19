@@ -334,6 +334,9 @@ var ChatForm = React.createClass({
   handleInformationDesk: function() {
     $("#message-form").val($("#message-form").val()+" :information_desk_person:");
   },
+  handleFire: function() {
+    $("#message-form").val($("#message-form").val()+" :fire:");
+  },
   render: function() {
     return (
       <div>
@@ -397,6 +400,9 @@ var ChatForm = React.createClass({
           </button>
           <button onClick={this.handleInformationDesk} className="form-action">
             💁
+          </button>
+          <button onClick={this.handleFire} className="form-action">
+            🔥
           </button>
         </div>
         <form className="chatForm row" onSubmit={this.handleSubmit}>
