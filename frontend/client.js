@@ -91,7 +91,7 @@ var ChatBox = React.createClass({
       dataType: 'json',
       cache: false,
       success: function(data) {
-        this.setState({data: data});
+        this.setState({data: data, pinnedMessages: this.state.pinnedMessages});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -99,23 +99,31 @@ var ChatBox = React.createClass({
     });
   },
   handleMessageSend: function(message) {
+  	prev = 0;
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
     var d = new Date();
     message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
-    this.setState({data: newMessages});
-    historyMsgs.push(message.text);
-    console.log("Message array "+ historyMsgs);
+    this.setState({data: newMessages, pinnedMessages: this.state.pinnedMessages});
+    if (message.text !== historyMsgs[historyMsgs.length-1]) {
+    	console.log("pushed")
+	    historyMsgs.push(message.text);
+    }
     socket.emit('chat message', message);
   },
   handleMessageReceive: function(message) {
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
-    this.setState({data: newMessages});
+    this.setState({data: newMessages, pinnedMessages: this.state.pinnedMessages});
+  },
+  handleMessagePinning: function(message) {
+    var pinnedMessages = this.state.pinnedMessages;
+    var newPinnedMessages = pinnedMessages.concat([message]);
+    this.setState({data: this.state.data, pinnedMessages: newPinnedMessages});
   },
   getInitialState: function() {
-    return {data: []};
+    return {pinnedMessages: [], data: []};
   },
   componentDidMount: function() {
     this.loadMessagesFromServer();
@@ -124,8 +132,26 @@ var ChatBox = React.createClass({
   render: function() {
     return (
       <div className="ChatBox col-sm-9 col-xs-12">
-        <ChatList data={this.state.data}/>
+        <PinnedList data={this.state.pinnedMessages}/>
+        <ChatList data={this.state.data} onMessagePin={this.handleMessagePinning}/>
         <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
+      </div>
+    );
+  }
+});
+
+var PinnedList = React.createClass({
+  render: function() {
+    var messageNodes = this.props.data.map(function(message) {
+      return (
+        <Message pinned={true} msg={message}>
+          {message.text}
+        </Message>
+      );
+    });
+    return (
+      <div className="pinnedList">
+        {messageNodes}
       </div>
     );
   }
@@ -134,11 +160,12 @@ var ChatBox = React.createClass({
 var ChatList = React.createClass({
   render: function() {
     var currentAuthor = "";
+    var onMessagePin = this.props.onMessagePin;
     var messageNodes = this.props.data.map(function(message) {
       var sameAuthor = currentAuthor == message.author;
       currentAuthor = message.author;
       return (
-        <Message msg={message} sameAuthor={sameAuthor}>
+        <Message msg={message} sameAuthor={sameAuthor} onMessagePin={onMessagePin}>
           {message.text}
         </Message>
       );
@@ -174,15 +201,15 @@ var ChatForm = React.createClass({
 				$('.message-send').click();
 				e.preventDefault();
 			}
-			if (e.keyCode == 38) {
-				console.log("prevMsgInd:  "+ prev);
+			var checked = checkFirstLastLine($(this));
+			if (e.keyCode == 38 && checked.first) {
 				if (prev < historyMsgs.length){
 					prev++;
-					$(this).val(historyMsgs[historyMsgs.length-prev]);		
+					$(this).val(historyMsgs[historyMsgs.length-prev]);
 				}
 				e.preventDefault();
 			}
-			if (e.keyCode == 40) {
+			if (e.keyCode == 40 && checked.last) {
 				if (prev<=0){
 					$(this).val('');
 				} else {
@@ -192,6 +219,35 @@ var ChatForm = React.createClass({
 				e.preventDefault();
 			}
 		});
+
+		function checkFirstLastLine(textele) {
+			var first_line = true;
+			var last_line = true;
+
+			var text = textele.val();
+		  var width = textele.width();
+		  var cursorPosition = textele.prop("selectionStart");
+
+		  var txtBeforeCaret = text.substring(0, cursorPosition);
+		  txtAfterCaret = text.substring(cursorPosition);
+		  var holder = $(document.createElement('div'));
+		  holder.css({
+		  	'display': 'none',
+		  })
+		  var widthBefore = holder.text(txtBeforeCaret).width();
+		  var widthAfter = holder.text(txtAfterCaret).width();
+
+		  var match1 = txtBeforeCaret.match(/\n/);
+
+		  if(txtAfterCaret!==null){match2=txtAfterCaret.match(/\n/g);}
+		  if(widthBefore>width || match1){
+		  	first_line=false;
+		  }
+		  if(widthAfter>width || (match2!==null && match2.length)) {
+		  	last_line=false;
+		  }
+		  return {first:first_line, last: last_line};
+		};
 	},
   render: function() {
     return (
@@ -204,11 +260,11 @@ var ChatForm = React.createClass({
 });
 
 var Message = React.createClass({
-	pinMessage: function() {
-		this.setState({id: this.state.id, pinned: true});
-	},
+  handlePin: function() {
+    this.props.onMessagePin(this.props.msg);
+  },
 	getInitialState: function() {
-		return { pinned: false};
+		return {pinned: false};
 	},
 	render: function() {
 		this.state.id = guid();
@@ -220,15 +276,11 @@ var Message = React.createClass({
     var rawMarkup = md.render(this.props.children.toString());
 
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
-		if (this.state.pinned) {
-			generatedClass += ' pinned';
-		}
 
     var ss = this.props.msg.text;
     var chunks = ss.split(SPLIT_CHARS)
     ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
     var code;
-    console.log("idbfr: "+ this.state.id);
 
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
@@ -256,7 +308,6 @@ var Message = React.createClass({
 
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
-    console.log("idlater: "+ this.state.id);
 
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
@@ -266,7 +317,7 @@ var Message = React.createClass({
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
         <div className="col-xs-1">
-          <button className="pin-button" onClick={this.pinMessage} title="Pin">
+          <button className="pin-button" onClick={this.handlePin} title="Pin">
             <i className="fa fa-thumb-tack"></i>
           </button>
         </div>
