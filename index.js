@@ -1,7 +1,10 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var express = require('express'),
+    app = express(),
+    server = require('http').createServer(app),
+    io = require('socket.io').listen(server);
+
+server.listen(process.env.PORT || 3000);
+
 var bodyParser = require('body-parser');
 var messages = [];
 var users = [];
@@ -22,7 +25,7 @@ app.get('/users', function(request, response) {
   response.send(JSON.stringify(users));
 });
 
-io.on('connection', function(socket){
+io.sockets.on('connection', function(socket){
   console.log('a user connected');
   socket.on('chat message', function(message) {
     console.log('Got a message!');
