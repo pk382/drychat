@@ -9,7 +9,9 @@ var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
 var ReactZeroClipboard = require('react-zeroclipboard');
-var md = require('markdown-it')();
+var md = require('markdown-it')({
+  html: true
+});
 var emoji = require('markdown-it-emoji');
 // enable emojis
 md.use(emoji , []);
@@ -109,7 +111,7 @@ var ChatBox = React.createClass({
     });
   },
   handleMessageSend: function(message) {
-  	prev = 0;
+    prev = 0;
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
     for (u in this.props.users) {
     	if (this.props.author === this.props.users[u].name) {
@@ -154,7 +156,7 @@ var ChatBox = React.createClass({
     return (
       <div className="ChatBox col-sm-9 col-xs-12">
         <PinnedList data={this.state.pinnedMessages} onMessageUnpin={this.handleMessageUnpinning}/>
-        <ChatList data={this.state.data} onMessagePin={this.handleMessagePinning}/>
+        <ChatList data={this.state.data} onMessagePin={this.handleMessagePinning} onMessageSend={this.handleMessageSend}/>
         <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
       </div>
     );
@@ -183,11 +185,12 @@ var ChatList = React.createClass({
   render: function() {
     var currentAuthor = "";
     var onMessagePin = this.props.onMessagePin;
+    var onMessageSend = this.props.onMessageSend;
     var messageNodes = this.props.data.map(function(message) {
       var sameAuthor = currentAuthor == message.author;
       currentAuthor = message.author;
       return (
-        <Message msg={message} sameAuthor={sameAuthor} onMessagePin={onMessagePin}>
+        <Message msg={message} sameAuthor={sameAuthor} onMessagePin={onMessagePin} onMessageSend={onMessageSend}>
           {message.text}
         </Message>
       );
@@ -301,13 +304,16 @@ var SearchResultsBox = React.createClass({
 var Message = React.createClass({
   handleEdit: function() {
     launchEdit(this.state.id);
+    if (this.state.editing) {
+      var code = $('#code-' + this.state.id).text();
+      this.props.onMessageSend({author: this.props.msg.author, text: SPLIT_CHARS + code});
+    }
+    this.setState({results: this.state.results, editing: !this.state.editing});
   },
   handlePin: function() {
     this.props.onMessagePin(this.props.msg);
   },
   handleUnpin: function() {
-    console.log('handling unpin');
-    console.log(this.props);
     this.props.onMessageUnpin(this.props.msg);
   },
   search: function() {
@@ -326,7 +332,7 @@ var Message = React.createClass({
     });
   },
 	getInitialState: function() {
-		return {pinned: false, results: []};
+		return {results: [], editing: false};
 	},
 	render: function() {
 		this.state.id = guid();
@@ -363,7 +369,7 @@ var Message = React.createClass({
                 <span dangerouslySetInnerHTML={{__html: md.render(normalText)}} />
                 <div className="codeblock">
                   <pre>
-										<code id={"code-"+this.state.id} data-id={this.state.id} ref="code">{ss}</code>
+										<code id={"code-"+this.state.id} data-id={this.state.id}>{ss}</code>
 									</pre>
                 </div>
                 <div className="action-buttons">
