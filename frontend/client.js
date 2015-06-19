@@ -14,7 +14,7 @@ var emoji = require('markdown-it-emoji');
 // enable emojis
 md.use(emoji , []);
 
-var SPLIT_CHARS = "//";
+var SPLIT_CHARS = "``";
 var historyMsgs = [];
 var prev = 0;
 
