@@ -107,7 +107,6 @@ var ChatBox = React.createClass({
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages, pinnedMessages: this.state.pinnedMessages});
     if (message.text !== historyMsgs[historyMsgs.length-1]) {
-    	console.log("pushed")
 	    historyMsgs.push(message.text);
     }
     socket.emit('chat message', message);
@@ -260,6 +259,9 @@ var ChatForm = React.createClass({
 });
 
 var Message = React.createClass({
+  handleEdit: function() {
+    launchEdit(this.state.id);
+  },
   handlePin: function() {
     this.props.onMessagePin(this.props.msg);
   },
@@ -301,7 +303,7 @@ var Message = React.createClass({
                 <span dangerouslySetInnerHTML={{__html: md.render(normalText)}} />
                 <div className="codeblock">
                   <pre>
-										<code id={"code-"+this.state.id} ref="code">{ss}</code>
+										<code id={"code-"+this.state.id} data-id={this.state.id} ref="code">{ss}</code>
 									</pre>
                 </div>
                 <div className="action-buttons">
@@ -313,7 +315,7 @@ var Message = React.createClass({
                   <button className="action-button" title="Search">
                     <i className="fa fa-search"></i>
                   </button>
-                  <button className="action-button" title="Edit">
+                  <button className="action-button" id={"edit-"+this.state.id} onClick={this.handleEdit} title="Edit">
                     <i className="fa fa-pencil"></i>
                   </button>
                 </div>
@@ -348,7 +350,6 @@ React.render(
 );
 
 function select_all(el) {
-	console.log("element: "+el);
   if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
       var range = document.createRange();
       range.selectNodeContents(el);
@@ -361,3 +362,41 @@ function select_all(el) {
       textRange.select();
   }
 }
+
+function launchEdit(id) {
+  var block = $("#code-"+id);
+  var btn = $("#edit-"+id);
+  block.attr('contenteditable', 'true');
+  block.hasClass("edit-active") ? block.removeClass("edit-active") : block.addClass("edit-active");
+  block.focus();
+  btn.hasClass("enabled") ? btn.removeClass("enabled") : btn.addClass("enabled");
+}
+
+document.addEventListener('keydown', function (event) {
+  var esc = event.which == 27,
+      block = event.target,
+      input = block.nodeName != 'INPUT' && block.nodeName != 'TEXTAREA',
+      data = {},
+      $block = $("#"+event.target.id);
+
+  if (input) {
+    if (esc) {
+      // restore state
+      document.execCommand('undo');
+      block.blur();
+      $block.removeClass("edit-active");
+      block.contentEditable = false;
+      $("#edit-"+$block.attr('data-id')).removeClass("enabled");
+    } else if (event.which == 9) {
+      // handle tab
+      event.preventDefault();
+      if (event.shiftKey) {
+        document.execCommand('styleWithCSS', true, null);
+        document.execCommand('outdent', true, null);
+      } else {
+        document.execCommand('styleWithCSS', true, null);
+        document.execCommand('indent', true, null);
+      }
+    }
+  }
+}, true);

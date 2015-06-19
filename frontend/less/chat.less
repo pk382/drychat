@@ -94,6 +94,23 @@ pre {
 .chatForm {
   height: @formheight;
   width: 100%;
+
+  textarea {
+    background: #F5F5F5;
+    border: none;
+    border-left: 0.4rem solid #CCC;
+    padding-top: 1.5rem;
+    resize: none;
+    &:focus {
+      transition: 0.8s;
+      background: #EEE;
+      outline: none;
+    }
+
+    @media only screen and (max-width : @small) {
+      padding-left: 3rem !important;
+    }
+  }
 }
 
 .chatForm.row {
@@ -105,28 +122,8 @@ pre {
   height: 100%;
 }
 
-.message-send {
-}
-
-textarea {
-  background: #F5F5F5;
-  border: none;
-  border-left: 0.4rem solid #CCC;
-  padding-top: 1.5rem;
-  resize: none;
-  &:focus {
-    transition: 0.8s;
-    background: #EEE;
-    outline: none;
-  }
-
-  @media only screen and (max-width : @small) {
-    padding-left: 3rem !important;
-  }
-}
-
 input[type="button"], input[type="reset"], input[type="submit"] {
-  background-color: #66B350;
+  background-color: @submit-green;
   border: none;
   color: #FFF;
   font-size: 2rem;
@@ -135,7 +132,7 @@ input[type="button"], input[type="reset"], input[type="submit"] {
 
   &:hover {
     transition: 0.25s;
-    background-color: #57A142;
+    background-color: @submit-green-dark;
   }
 }
 
@@ -211,4 +208,17 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   .message {
     background: transparent;
   }
+}
+
+.enabled {
+  background-color: @submit-green;
+  &:hover {
+    background-color: @submit-green-dark;
+    border: none;
+    color: #FFF;
+  }
+}
+
+.edit-active {
+  border: 2px solid @submit-green;
 }
