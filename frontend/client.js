@@ -12,6 +12,7 @@ var ReactZeroClipboard = require('react-zeroclipboard');
 
 var SPLIT_CHARS = "//";
 
+
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -94,8 +95,8 @@ var ChatBox = React.createClass({
   },
   handleMessageSend: function(message) {
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
-    var date = new Date();
-    message.timestamp = date.getHours().toString() + ':' + date.getMinutes().toString();
+    var d = new Date();
+    message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages});
