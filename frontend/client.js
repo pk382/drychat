@@ -144,7 +144,7 @@ var PinnedList = React.createClass({
   render: function() {
     var messageNodes = this.props.data.map(function(message) {
       return (
-        <Message pinned={true} msg={message}>
+        <Message pinned={true} msg={message} pin={true}>
           {message.text}
         </Message>
       );
@@ -268,15 +268,28 @@ var Message = React.createClass({
 	},
 	render: function() {
 		this.state.id = guid();
+    // handle same author
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
       authorBody = (<div className="author-container col-xs-3"></div>);
     }
 
+    // markup
     var rawMarkup = md.render(this.props.children.toString());
 
+    // handle repeat messages
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
 
+    // handle pin
+    var pinOptions = (<button className="pin-button" onClick={this.handlePin} title="Pin">
+                        <i className="fa fa-thumb-tack"></i>
+                      </button>);
+    if (this.props.pin)
+      pinOptions = (<button className="unpin-button" title="Unpin">
+                        <i className="fa fa-close"></i>
+                      </button>);
+
+    // handle code block
     var ss = this.props.msg.text;
     var chunks = ss.split(SPLIT_CHARS)
     ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
@@ -317,9 +330,7 @@ var Message = React.createClass({
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
         <div className="col-xs-1">
-          <button className="pin-button" onClick={this.handlePin} title="Pin">
-            <i className="fa fa-thumb-tack"></i>
-          </button>
+          {pinOptions}
         </div>
       </div>
     );
