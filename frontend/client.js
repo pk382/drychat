@@ -95,14 +95,17 @@ var ChatBox = React.createClass({
     });
   },
   handleMessageSend: function(message) {
+  	prev = 0;
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
     var d = new Date();
     message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages});
-    historyMsgs.push(message.text);
-    console.log("Message array "+ historyMsgs);
+    if (message.text !== historyMsgs[historyMsgs.length-1]) {
+    	console.log("pushed")
+	    historyMsgs.push(message.text);
+    }
     socket.emit('chat message', message);
   },
   handleMessageReceive: function(message) {
@@ -170,15 +173,15 @@ var ChatForm = React.createClass({
 				$('.message-send').click();
 				e.preventDefault();
 			}
-			if (e.keyCode == 38) {
-				console.log("prevMsgInd:  "+ prev);
+			var checked = checkFirstLastLine($(this));
+			if (e.keyCode == 38 && checked.first) {
 				if (prev < historyMsgs.length){
 					prev++;
 					$(this).val(historyMsgs[historyMsgs.length-prev]);		
 				}
 				e.preventDefault();
 			}
-			if (e.keyCode == 40) {
+			if (e.keyCode == 40 && checked.last) {
 				if (prev<=0){
 					$(this).val('');
 				} else {
@@ -188,6 +191,35 @@ var ChatForm = React.createClass({
 				e.preventDefault();
 			}
 		});
+
+		function checkFirstLastLine(textele) {
+			var first_line = true;
+			var last_line = true;
+
+			var text = textele.val();
+		  var width = textele.width();
+		  var cursorPosition = textele.prop("selectionStart");
+
+		  var txtBeforeCaret = text.substring(0, cursorPosition);
+		  txtAfterCaret = text.substring(cursorPosition);
+		  var holder = $(document.createElement('div'));
+		  holder.css({
+		  	'display': 'none',
+		  })
+		  var widthBefore = holder.text(txtBeforeCaret).width();
+		  var widthAfter = holder.text(txtAfterCaret).width();
+		  
+		  var match1 = txtBeforeCaret.match(/\n/);
+		  
+		  if(txtAfterCaret!==null){match2=txtAfterCaret.match(/\n/g);}
+		  if(widthBefore>width || match1){ 
+		  	first_line=false;
+		  }
+		  if(widthAfter>width || (match2!==null && match2.length)) {
+		  	last_line=false;
+		  }
+		  return {first:first_line, last: last_line};
+		};
 	},
   render: function() {
     return (
@@ -224,7 +256,6 @@ var Message = React.createClass({
     var chunks = ss.split(SPLIT_CHARS)
     ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
     var code;
-    console.log("idbfr: "+ this.state.id);
 
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
@@ -253,7 +284,6 @@ var Message = React.createClass({
 
     }
     var messageBody = !code ? (<span dangerouslySetInnerHTML={{__html: rawMarkup}} />) : (code);
-    console.log("idlater: "+ this.state.id);
 
     return (
       <div className={generatedClass} style={{'borderColor': this.props.msg.color}}>
