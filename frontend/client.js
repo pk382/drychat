@@ -11,7 +11,8 @@ var bootstrap = require('bootstrap-less/js/bootstrap.js');
 var ReactZeroClipboard = require('react-zeroclipboard');
 
 var SPLIT_CHARS = "//";
-
+var historyMsgs = [];
+var prev = 0;
 
 function guid() {
   function s4() {
@@ -100,6 +101,8 @@ var ChatBox = React.createClass({
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages});
+    historyMsgs.push(message.text);
+    console.log("Message array "+ historyMsgs);
     socket.emit('chat message', message);
   },
   handleMessageReceive: function(message) {
@@ -165,6 +168,23 @@ var ChatForm = React.createClass({
 		$('textarea').keydown(function(e) {
 			if (e.keyCode == 13 && !e.shiftKey) {
 				$('.message-send').click();
+				e.preventDefault();
+			}
+			if (e.keyCode == 38) {
+				console.log("prevMsgInd:  "+ prev);
+				if (prev < historyMsgs.length){
+					prev++;
+					$(this).val(historyMsgs[historyMsgs.length-prev]);		
+				}
+				e.preventDefault();
+			}
+			if (e.keyCode == 40) {
+				if (prev<=0){
+					$(this).val('');
+				} else {
+					prev--;
+					$(this).val(historyMsgs[historyMsgs.length-prev]);
+				}
 				e.preventDefault();
 			}
 		});
