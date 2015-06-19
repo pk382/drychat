@@ -279,11 +279,135 @@ var ChatForm = React.createClass({displayName: "ChatForm",
 		  return {first:first_line, last: last_line};
 		};
 	},
+  handleBold: function() {
+    $("#message-form").surroundSelectedText("**","**");
+  },
+  handleItalic: function() {
+    $("#message-form").surroundSelectedText("*","*");
+  },
+  handleStrikethrough: function() {
+    $("#message-form").surroundSelectedText("~~","~~");
+  },
+  handleLink: function() {
+    $("#message-form").surroundSelectedText("[Link](",")");
+  },
+  handleImage: function() {
+    $("#message-form").surroundSelectedText("![](",")");
+  },
+  handleHeader: function() {
+    $("#message-form").surroundSelectedText("## ","");
+  },
+  handleQuote: function() {
+    $("#message-form").surroundSelectedText("> ","");
+  },
+  handleListUl: function() {
+    $("#message-form").surroundSelectedText("+ ","");
+  },
+  handleCode: function() {
+    $("#message-form").surroundSelectedText("``","");
+  },
+  handleSmile: function() {
+    $("#message-form").val($("#message-form").val()+" :smile:");
+  },
+  handleSmiley: function() {
+    $("#message-form").val($("#message-form").val()+" :smiley:");
+  },
+  handleWink: function() {
+    $("#message-form").val($("#message-form").val()+" :wink:");
+  },
+  handleGrin: function() {
+    $("#message-form").val($("#message-form").val()+" :grin:");
+  },
+  handleUnamused: function() {
+    $("#message-form").val($("#message-form").val()+" :unamused:");
+  },
+  handleJoy: function() {
+    $("#message-form").val($("#message-form").val()+" :joy:");
+  },
+  handleSob: function() {
+    $("#message-form").val($("#message-form").val()+" :sob:");
+  },
+  handleHeart: function() {
+    $("#message-form").val($("#message-form").val()+" :heart:");
+  },
+  handleBrokenHeart: function() {
+    $("#message-form").val($("#message-form").val()+" :broken_heart:");
+  },
+  handleThumbs: function() {
+    $("#message-form").val($("#message-form").val()+" :thumbsup:");
+  },
+  handleInformationDesk: function() {
+    $("#message-form").val($("#message-form").val()+" :information_desk_person:");
+  },
   render: function() {
     return (
-      React.createElement("form", {className: "chatForm row", onSubmit: this.handleSubmit}, 
-        React.createElement("textarea", {placeholder: "Say something...", className: "message-field col-sm-10 col-xs-9", ref: "text"}), 
-        React.createElement("input", {type: "submit", value: "Send", className: "message-send col-sm-2 col-xs-3", Send: true})
+      React.createElement("div", null, 
+        React.createElement("div", {className: "form-action-bar"}, 
+          React.createElement("button", {onClick: this.handleBold, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-bold"})
+          ), 
+          React.createElement("button", {onClick: this.handleItalic, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-italic"})
+          ), 
+          React.createElement("button", {onClick: this.handleStrikethrough, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-strikethrough"})
+          ), 
+          React.createElement("button", {onClick: this.handleLink, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-link"})
+          ), 
+          React.createElement("button", {onClick: this.handleImage, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-image"})
+          ), 
+          React.createElement("button", {onClick: this.handleHeader, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-header"})
+          ), 
+          React.createElement("button", {onClick: this.handleQuote, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-quote-left"})
+          ), 
+          React.createElement("button", {onClick: this.handleListUl, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-list-ul"})
+          ), 
+          React.createElement("button", {onClick: this.handleCode, className: "form-action"}, 
+            React.createElement("i", {className: "fa fa-code"})
+          ), 
+          React.createElement("button", {onClick: this.handleSmile, className: "form-action"}, 
+            "😃"
+          ), 
+          React.createElement("button", {onClick: this.handleSmiley, className: "form-action"}, 
+            "😀"
+          ), 
+          React.createElement("button", {onClick: this.handleWink, className: "form-action"}, 
+            "😉"
+          ), 
+          React.createElement("button", {onClick: this.handleGrin, className: "form-action"}, 
+            "😁"
+          ), 
+          React.createElement("button", {onClick: this.handleUnamused, className: "form-action"}, 
+            "😒"
+          ), 
+          React.createElement("button", {onClick: this.handleJoy, className: "form-action"}, 
+            "😂"
+          ), 
+          React.createElement("button", {onClick: this.handleSob, className: "form-action"}, 
+            "😭"
+          ), 
+          React.createElement("button", {onClick: this.handleHeart, className: "form-action"}, 
+            "💘"
+          ), 
+          React.createElement("button", {onClick: this.handleBrokenHeart, className: "form-action"}, 
+            "💔"
+          ), 
+          React.createElement("button", {onClick: this.handleThumbs, className: "form-action"}, 
+            "👍"
+          ), 
+          React.createElement("button", {onClick: this.handleInformationDesk, className: "form-action"}, 
+            "💁"
+          )
+        ), 
+        React.createElement("form", {className: "chatForm row", onSubmit: this.handleSubmit}, 
+          React.createElement("textarea", {id: "message-form", placeholder: "Say something...", className: "message-field col-sm-10 col-xs-9", ref: "text"}), 
+          React.createElement("input", {type: "submit", value: "Send", className: "message-send col-sm-2 col-xs-3", Send: true})
+        )
       )
     );
   }
