@@ -10,9 +10,9 @@
   width: 100%;
   overflow-y: scroll;
   padding: 2vh 0;
-  height: (93vh-@formheight);
+  height: (93vh-@inputheight);
   @media only screen and (max-width : @small) {
-    height: (75vh-@formheight);
+    height: (75vh-@inputheight);
   }
 }
 
@@ -92,13 +92,13 @@ pre {
 }
 
 .chatForm {
-  height: @formheight;
+  height: (@formheight);
   width: 100%;
 
   textarea {
-    background: #F5F5F5;
+    background: @form-back;
     border: none;
-    border-left: 0.4rem solid #CCC;
+    border-left: 0.4rem solid @light-gray;
     padding-top: 1.5rem;
     resize: none;
     &:focus {
@@ -262,4 +262,33 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   font-size: 1rem;
   float: left;
   margin-top: 0.8rem;
+}
+
+.form-action-bar {
+  background: #FAFAFA;
+  border-left: 0.4rem solid @light-gray;
+  color: #333;
+  height: @barheight;
+  padding-top: 0.6rem;
+  width: 100%;
+}
+
+.form-action {
+  background: none;
+  border: none;
+  color: @faded-gray;
+  margin-left: 1.5rem;
+  padding: 0.2rem;
+
+  &:hover {
+    color: #333;
+  }
+  &:focus {
+    outline: none;
+  }
+
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */ 
 }

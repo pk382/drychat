@@ -274,12 +274,136 @@ var ChatForm = React.createClass({
 		  return {first:first_line, last: last_line};
 		};
 	},
+  handleBold: function() {
+    $("#message-form").surroundSelectedText("**","**");
+  },
+  handleItalic: function() {
+    $("#message-form").surroundSelectedText("*","*");
+  },
+  handleStrikethrough: function() {
+    $("#message-form").surroundSelectedText("~~","~~");
+  },
+  handleLink: function() {
+    $("#message-form").surroundSelectedText("[Link](",")");
+  },
+  handleImage: function() {
+    $("#message-form").surroundSelectedText("![](",")");
+  },
+  handleHeader: function() {
+    $("#message-form").surroundSelectedText("## ","");
+  },
+  handleQuote: function() {
+    $("#message-form").surroundSelectedText("> ","");
+  },
+  handleListUl: function() {
+    $("#message-form").surroundSelectedText("+ ","");
+  },
+  handleCode: function() {
+    $("#message-form").surroundSelectedText("``","");
+  },
+  handleSmile: function() {
+    $("#message-form").val($("#message-form").val()+" :smile:");
+  },
+  handleSmiley: function() {
+    $("#message-form").val($("#message-form").val()+" :smiley:");
+  },
+  handleWink: function() {
+    $("#message-form").val($("#message-form").val()+" :wink:");
+  },
+  handleGrin: function() {
+    $("#message-form").val($("#message-form").val()+" :grin:");
+  },
+  handleUnamused: function() {
+    $("#message-form").val($("#message-form").val()+" :unamused:");
+  },
+  handleJoy: function() {
+    $("#message-form").val($("#message-form").val()+" :joy:");
+  },
+  handleSob: function() {
+    $("#message-form").val($("#message-form").val()+" :sob:");
+  },
+  handleHeart: function() {
+    $("#message-form").val($("#message-form").val()+" :heart:");
+  },
+  handleBrokenHeart: function() {
+    $("#message-form").val($("#message-form").val()+" :broken_heart:");
+  },
+  handleThumbs: function() {
+    $("#message-form").val($("#message-form").val()+" :thumbsup:");
+  },
+  handleInformationDesk: function() {
+    $("#message-form").val($("#message-form").val()+" :information_desk_person:");
+  },
   render: function() {
     return (
-      <form className="chatForm row" onSubmit={this.handleSubmit}>
-        <textarea placeholder="Say something..." className="message-field col-sm-10 col-xs-9" ref="text"/>
-        <input type="submit" value="Send" className="message-send col-sm-2 col-xs-3" Send/>
-      </form>
+      <div>
+        <div className="form-action-bar">
+          <button onClick={this.handleBold} className="form-action">
+            <i className="fa fa-bold"></i>
+          </button>
+          <button onClick={this.handleItalic} className="form-action">
+            <i className="fa fa-italic"></i>
+          </button>
+          <button onClick={this.handleStrikethrough} className="form-action">
+            <i className="fa fa-strikethrough"></i>
+          </button>
+          <button onClick={this.handleLink} className="form-action">
+            <i className="fa fa-link"></i>
+          </button>
+          <button onClick={this.handleImage} className="form-action">
+            <i className="fa fa-image"></i>
+          </button>
+          <button onClick={this.handleHeader} className="form-action">
+            <i className="fa fa-header"></i>
+          </button>
+          <button onClick={this.handleQuote} className="form-action">
+            <i className="fa fa-quote-left"></i>
+          </button>
+          <button onClick={this.handleListUl} className="form-action">
+            <i className="fa fa-list-ul"></i>
+          </button>
+          <button onClick={this.handleCode} className="form-action">
+            <i className="fa fa-code"></i>
+          </button>
+          <button onClick={this.handleSmile} className="form-action">
+            😃
+          </button>
+          <button onClick={this.handleSmiley} className="form-action">
+            😀
+          </button>
+          <button onClick={this.handleWink} className="form-action">
+            😉
+          </button>
+          <button onClick={this.handleGrin} className="form-action">
+            😁
+          </button>
+          <button onClick={this.handleUnamused} className="form-action">
+            😒
+          </button>
+          <button onClick={this.handleJoy} className="form-action">
+            😂
+          </button>
+          <button onClick={this.handleSob} className="form-action">
+            😭
+          </button>
+          <button onClick={this.handleHeart} className="form-action">
+            💘
+          </button>
+          <button onClick={this.handleBrokenHeart} className="form-action">
+            💔
+          </button>
+          <button onClick={this.handleThumbs} className="form-action">
+            👍
+          </button>
+          <button onClick={this.handleInformationDesk} className="form-action">
+            💁
+          </button>
+        </div>
+        <form className="chatForm row" onSubmit={this.handleSubmit}>
+          <textarea id="message-form" placeholder="Say something..." className="message-field col-sm-10 col-xs-9" ref="text"/>
+          <input type="submit" value="Send" className="message-send col-sm-2 col-xs-3" Send/>
+        </form>
+      </div>
     );
   }
 });

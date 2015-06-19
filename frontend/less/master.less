@@ -2,6 +2,7 @@
 @dark-gray: #3F3F3F;
 @faded-gray: #AAA;
 @light-gray: #CCC;
+@form-back: #F5F5F5;
 @logo-red: #D9565B;
 @submit-green: #66B350;
 @submit-green-dark: #57A142;
@@ -12,10 +13,12 @@
 @small: 768px;
 
 @formheight: 15vh;
+@barheight: 3vh;
+@inputheight: 18vh;
 
 // External Imports
 @import "../../node_modules/bootstrap-less/bootstrap/bootstrap.less";
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans);
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans:400,700);
 
 // Partials
 @import "chat.less";
@@ -34,4 +37,8 @@
 	color: #FFF;
 	vertical-align: middle;
 	padding-left: 4rem;
+}
+
+strong {
+  font-weight: 700;
 }
