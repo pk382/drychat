@@ -159,7 +159,7 @@ var ChatBox = React.createClass({displayName: "ChatBox",
   render: function() {
     return (
       React.createElement("div", {className: "ChatBox col-sm-9 col-xs-12"}, 
-        React.createElement(PinnedList, {data: this.state.pinnedMessages, onMessageUnpin: this.handleMessageUnpinning}), 
+        React.createElement(PinnedList, {data: this.state.pinnedMessages, onMessageUnpin: this.handleMessageUnpinning, onMessageSend: this.handleMessageSend}), 
         React.createElement(ChatList, {data: this.state.data, onMessagePin: this.handleMessagePinning, onMessageSend: this.handleMessageSend}), 
         React.createElement(ChatForm, {author: this.props.author, onMessageSend: this.handleMessageSend})
       )
@@ -170,9 +170,10 @@ var ChatBox = React.createClass({displayName: "ChatBox",
 var PinnedList = React.createClass({displayName: "PinnedList",
   render: function() {
     var onMessageUnpin = this.props.onMessageUnpin;
+    var onMessageSend = this.props.onMessageSend;
     var messageNodes = this.props.data.map(function(message) {
       return (
-        React.createElement(Message, {pinned: true, msg: message, pin: true, onMessageUnpin: onMessageUnpin}, 
+        React.createElement(Message, {pinned: true, msg: message, pin: true, onMessageUnpin: onMessageUnpin, onMessageSend: onMessageSend}, 
           message.text
         )
       );
