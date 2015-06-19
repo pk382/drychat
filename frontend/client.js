@@ -277,6 +277,24 @@ var ChatForm = React.createClass({
   }
 });
 
+var SearchResultsBox = React.createClass({
+  render: function() {
+    var searchResultsNodes = this.props.results.map(function(result) {
+      return (
+        <div class="searchResult">
+          <h1>{result.title}</h1>
+          <p>{result.blurb}</p>
+        </div>
+      );
+    });
+    return (
+      <div className="searchResultsBox">
+        {searchResultNodes}
+      </div>
+    );
+  }
+});
+
 var Message = React.createClass({
   handlePin: function() {
     this.props.onMessagePin(this.props.msg);
