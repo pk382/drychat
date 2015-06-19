@@ -85,7 +85,7 @@ var ChatBox = React.createClass({
       dataType: 'json',
       cache: false,
       success: function(data) {
-        this.setState({data: data});
+        this.setState({data: data, pinnedMessages: this.state.pinnedMessages});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -98,16 +98,21 @@ var ChatBox = React.createClass({
     message.timestamp = date.getHours().toString() + ':' + date.getMinutes().toString();
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
-    this.setState({data: newMessages});
+    this.setState({data: newMessages, pinnedMessages: this.state.pinnedMessages});
     socket.emit('chat message', message);
   },
   handleMessageReceive: function(message) {
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
-    this.setState({data: newMessages});
+    this.setState({data: newMessages, pinnedMessages: this.state.pinnedMessages});
+  },
+  handleMessagePinning: function(message) {
+    var pinnedMessages = this.state.pinnedMessages;
+    var newPinnedMessages = pinnedMessages.concat([message]);
+    this.setState({data: this.state.data, pinnedMessages: newPinnedMessages});
   },
   getInitialState: function() {
-    return {data: []};
+    return {pinnedMessages: [], data: []};
   },
   componentDidMount: function() {
     this.loadMessagesFromServer();
@@ -116,8 +121,26 @@ var ChatBox = React.createClass({
   render: function() {
     return (
       <div className="ChatBox col-sm-9 col-xs-12">
-        <ChatList data={this.state.data}/>
+        <PinnedList data={this.state.pinnedMessages}/>
+        <ChatList data={this.state.data} onMessagePin={this.handleMessagePinning}/>
         <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
+      </div>
+    );
+  }
+});
+
+var PinnedList = React.createClass({
+  render: function() {
+    var messageNodes = this.props.data.map(function(message) {
+      return (
+        <Message pinned={true} msg={message}>
+          {message.text}
+        </Message>
+      );
+    });
+    return (
+      <div className="pinnedList">
+        {messageNodes}
       </div>
     );
   }
@@ -126,11 +149,12 @@ var ChatBox = React.createClass({
 var ChatList = React.createClass({
   render: function() {
     var currentAuthor = "";
+    var onMessagePin = this.props.onMessagePin;
     var messageNodes = this.props.data.map(function(message) {
       var sameAuthor = currentAuthor == message.author;
       currentAuthor = message.author;
       return (
-        <Message msg={message} sameAuthor={sameAuthor}>
+        <Message msg={message} sameAuthor={sameAuthor} onMessagePin={onMessagePin}>
           {message.text}
         </Message>
       );
@@ -179,11 +203,11 @@ var ChatForm = React.createClass({
 });
 
 var Message = React.createClass({
-	pinMessage: function() {
-		this.setState({id: this.state.id, pinned: true});
-	},
+  handlePin: function() {
+    this.props.onMessagePin(this.props.msg);
+  },
 	getInitialState: function() {
-		return { pinned: false};
+		return {pinned: false};
 	},
 	render: function() {
 		this.state.id = guid();
@@ -195,9 +219,6 @@ var Message = React.createClass({
     var rawMarkup = emojione.toImage(this.props.children.toString());
     rawMarkup = marked(rawMarkup, {sanitize: false});
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
-		if (this.state.pinned) {
-			generatedClass += ' pinned';
-		}
 
     var ss = this.props.msg.text;
     var chunks = ss.split(SPLIT_CHARS)
@@ -242,7 +263,7 @@ var Message = React.createClass({
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
         <div className="col-xs-1">
-          <button className="pin-button" onClick={this.pinMessage} title="Pin">
+          <button className="pin-button" onClick={this.handlePin} title="Pin">
             <i className="fa fa-thumb-tack"></i>
           </button>
         </div>
