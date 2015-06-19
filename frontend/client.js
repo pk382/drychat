@@ -15,6 +15,8 @@ var emoji = require('markdown-it-emoji');
 md.use(emoji , []);
 
 var SPLIT_CHARS = "//";
+var historyMsgs = [];
+var prev = 0;
 
 function guid() {
   function s4() {
@@ -98,11 +100,13 @@ var ChatBox = React.createClass({
   },
   handleMessageSend: function(message) {
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
-    var date = new Date();
-    message.timestamp = date.getHours().toString() + ':' + date.getMinutes().toString();
+    var d = new Date();
+    message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages});
+    historyMsgs.push(message.text);
+    console.log("Message array "+ historyMsgs);
     socket.emit('chat message', message);
   },
   handleMessageReceive: function(message) {
@@ -168,6 +172,23 @@ var ChatForm = React.createClass({
 		$('textarea').keydown(function(e) {
 			if (e.keyCode == 13 && !e.shiftKey) {
 				$('.message-send').click();
+				e.preventDefault();
+			}
+			if (e.keyCode == 38) {
+				console.log("prevMsgInd:  "+ prev);
+				if (prev < historyMsgs.length){
+					prev++;
+					$(this).val(historyMsgs[historyMsgs.length-prev]);		
+				}
+				e.preventDefault();
+			}
+			if (e.keyCode == 40) {
+				if (prev<=0){
+					$(this).val('');
+				} else {
+					prev--;
+					$(this).val(historyMsgs[historyMsgs.length-prev]);
+				}
 				e.preventDefault();
 			}
 		});
