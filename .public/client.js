@@ -439,11 +439,11 @@ var SearchResultsBox = React.createClass({displayName: "SearchResultsBox",
 var Message = React.createClass({displayName: "Message",
   handleEdit: function() {
     launchEdit(this.state.id);
-    if (this.state.editing) {
-      var code = $('#code-' + this.state.id).text();
-      this.props.onMessageSend({text: SPLIT_CHARS + code}, true);
+    var code = $('#code-' + this.state.id);
+    if (!code.hasClass('edit-active')) {
+      this.props.onMessageSend({text: SPLIT_CHARS + code.text()}, true);
     }
-    this.setState({results: this.state.results, editing: !this.state.editing});
+    this.setState({results: this.state.results});
   },
   handlePin: function() {
     this.props.onMessagePin(this.props.msg);
