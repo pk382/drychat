@@ -110,7 +110,10 @@ var ChatBox = React.createClass({
       }.bind(this)
     });
   },
-  handleMessageSend: function(message) {
+  handleMessageSend: function(message, overrideAuthor) {
+    if (overrideAuthor) {
+      message.author = this.props.author;
+    }
     prev = 0;
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
     for (u in this.props.users) {
@@ -186,6 +189,7 @@ var ChatList = React.createClass({
     var currentAuthor = "";
     var onMessagePin = this.props.onMessagePin;
     var onMessageSend = this.props.onMessageSend;
+    console.log(this.props.data);
     var messageNodes = this.props.data.map(function(message) {
       var sameAuthor = currentAuthor == message.author;
       currentAuthor = message.author;
@@ -436,7 +440,7 @@ var Message = React.createClass({
     launchEdit(this.state.id);
     if (this.state.editing) {
       var code = $('#code-' + this.state.id).text();
-      this.props.onMessageSend({author: this.props.msg.author, text: SPLIT_CHARS + code});
+      this.props.onMessageSend({text: SPLIT_CHARS + code}, true);
     }
     this.setState({results: this.state.results, editing: !this.state.editing});
   },
@@ -447,7 +451,8 @@ var Message = React.createClass({
     this.props.onMessageUnpin(this.props.msg);
   },
   search: function() {
-    var query = this.refs.code.props.children.toString();
+    var query = $('#code-' + this.state.id).text();
+    console.log(query);
     var key = "AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q";
     var cx = '005775816924496801869:07j0tqhxcyy';
     var searchURL = "https://www.googleapis.com/customsearch/v1?key="+key+"&cx="+cx+"&site=stackoverflow.com&q=";
