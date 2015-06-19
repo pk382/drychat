@@ -42,7 +42,7 @@ io.on('connection', function(socket){
   socket.on('new participant', function(name) {
     console.log('Got a new user!');
     var newUser = {name: name, color: getRandomColor()};
-    users.push(user);
+    users.push(newUser);
     socket.broadcast.emit('new participant', newUser);
   });
 
