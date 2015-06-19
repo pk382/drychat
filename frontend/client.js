@@ -284,11 +284,10 @@ var ChatForm = React.createClass({
 
 var SearchResultsBox = React.createClass({
   render: function() {
-    var searchResultsNodes = this.props.results.map(function(result) {
+    var searchResultNodes = this.props.results.slice(0, 2).map(function(result) {
       return (
         <div class="searchResult">
-          <h1>{result.title}</h1>
-          <p>{result.blurb}</p>
+          <a href={result.link} target="_blank"><h3>{result.title}</h3><p>{result.snippet}</p></a>
         </div>
       );
     });
@@ -309,8 +308,23 @@ var Message = React.createClass({
     console.log(this.props);
     this.props.onMessageUnpin(this.props.msg);
   },
+  search: function() {
+    var code = this.refs.code.value;
+    var searchURL = "https://www.googleapis.com/customsearch/v1?key=AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q&cx=017576662512468239146:omuauf_lfve&q=";
+    $.ajax({
+      url: searchURL + code,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({id: this.state.id, results: data.items});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('search', status, err.toString());
+      }.bind(this)
+    });
+  },
 	getInitialState: function() {
-		return {pinned: false};
+		return {pinned: false, results: []};
 	},
 	render: function() {
 		this.state.id = guid();
@@ -356,13 +370,14 @@ var Message = React.createClass({
                       <i className="fa fa-copy"></i>
                     </button>
                   </ReactZeroClipboard>
-                  <button className="action-button" title="Search">
+                  <button className="action-button" onClick={this.search} title="Search">
                     <i className="fa fa-search"></i>
                   </button>
                   <button className="action-button" title="Edit">
                     <i className="fa fa-pencil"></i>
                   </button>
                 </div>
+                <SearchResultsBox results={this.state.results}/>
               </div>);
 
     }
