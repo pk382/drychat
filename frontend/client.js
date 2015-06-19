@@ -283,16 +283,22 @@ var ChatForm = React.createClass({
 
 var SearchResultsBox = React.createClass({
   render: function() {
-    var searchResultNodes = this.props.results.slice(0, 2).map(function(result) {
+    var footer;
+    console.log(this.props.results);
+    if (this.props.results.length > 0)
+      footer = (<div className="search-attribution">Top 3 Stack Overflow results fetched via Google.</div>);
+    var searchResultNodes = this.props.results.slice(0, 3).map(function(result) {
       return (
-        <div class="searchResult">
-          <a href={result.link} target="_blank"><h3>{result.title}</h3><p>{result.snippet}</p></a>
+        <div className="searchResult">
+          <a href={result.link} target="_blank"><h4>{result.title}</h4></a>
+          <p>{result.snippet}</p>
         </div>
       );
     });
     return (
       <div className="searchResultsBox">
         {searchResultNodes}
+        {footer}
       </div>
     );
   }
@@ -306,15 +312,16 @@ var Message = React.createClass({
     this.props.onMessagePin(this.props.msg);
   },
   handleUnpin: function() {
-    console.log('handling unpin');
     console.log(this.props);
     this.props.onMessageUnpin(this.props.msg);
   },
   search: function() {
-    var code = this.refs.code.value;
-    var searchURL = "https://www.googleapis.com/customsearch/v1?key=AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q&cx=017576662512468239146:omuauf_lfve&q=";
+    var query = this.refs.code.props.children.toString();
+    var key = "AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q";
+    var cx = '005775816924496801869:07j0tqhxcyy';
+    var searchURL = "https://www.googleapis.com/customsearch/v1?key="+key+"&cx="+cx+"&site=stackoverflow.com&q=";
     $.ajax({
-      url: searchURL + code,
+      url: searchURL + query,
       dataType: 'json',
       cache: false,
       success: function(data) {
@@ -324,6 +331,7 @@ var Message = React.createClass({
         console.error('search', status, err.toString());
       }.bind(this)
     });
+    this.refs.searchButton.getDOMNode().setAttribute("class", "disabled-button");
   },
 	getInitialState: function() {
 		return {pinned: false, results: []};
@@ -372,7 +380,7 @@ var Message = React.createClass({
                       <i className="fa fa-copy"></i>
                     </button>
                   </ReactZeroClipboard>
-                  <button className="action-button" onClick={this.search} title="Search">
+                  <button className="action-button" onClick={this.search} ref="searchButton" title="Search">
                     <i className="fa fa-search"></i>
                   </button>
                   <button className="action-button" id={"edit-"+this.state.id} onClick={this.handleEdit} title="Edit">

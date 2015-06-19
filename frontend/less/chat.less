@@ -58,7 +58,7 @@
     }
 
     .timestamp {
-      color: #CCC;
+      color: @light-gray;
       display: inline-block;
       float: right;
       font-size: 1rem;
@@ -163,11 +163,30 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   }
 }
 
+.disabled-button {
+  .action-button;
+  background-color: @faded-gray;
+  color: #FFF;
+  cursor: default;
+  &:hover {
+    background-color: @faded-gray;
+    border: none;
+    color: #FFF;
+  }
+}
+
 .zeroclipboard-is-hover {
   background-color: #FFF;
   border: 1px solid @dark-gray;
   color: #333;
 }
+
+.zeroclipboard-is-active {
+  background-color: @submit-green-dark;
+  border: 1px solid @submit-green;
+  color: #FFF;
+}
+
 
 .pin-button {
   background: none;
@@ -202,11 +221,16 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.15);
   width: 100%;
 
+  .message-container {
+    border-top: 0.2rem solid #F5F5CB !important;
+  }
+
   .author-container {
     background: transparent;
   }
   .message {
     background: transparent;
+    padding-top: 0.6rem;
   }
 }
 
@@ -221,4 +245,21 @@ input[type="button"], input[type="reset"], input[type="submit"] {
 
 .edit-active {
   border: 2px solid @submit-green;
+}
+
+.searchResult {
+  border-top: 0.4rem solid #FFF;
+  margin-top: 1rem;
+
+  p {
+    color: @faded-gray;
+    font-size: 1.4rem;
+  }
+}
+
+.search-attribution {
+  color: @light-gray;
+  font-size: 1rem;
+  float: left;
+  margin-top: 0.8rem;
 }
