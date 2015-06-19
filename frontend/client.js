@@ -122,6 +122,13 @@ var ChatBox = React.createClass({
     var newPinnedMessages = pinnedMessages.concat([message]);
     this.setState({data: this.state.data, pinnedMessages: newPinnedMessages});
   },
+  handleMessageUnpinning: function(message) {
+    var pinnedMessages = this.state.pinnedMessages;
+    var newPinnedMessages = pinnedMessages.filter(function(element, index, array) {
+      return element !== message;
+    });
+    this.setState({data: this.state.data, pinnedMessages: newPinnedMessages});
+  },
   getInitialState: function() {
     return {pinnedMessages: [], data: []};
   },
@@ -132,7 +139,7 @@ var ChatBox = React.createClass({
   render: function() {
     return (
       <div className="ChatBox col-sm-9 col-xs-12">
-        <PinnedList data={this.state.pinnedMessages}/>
+        <PinnedList data={this.state.pinnedMessages} onMessageUnpin={this.handleMessageUnpinning}/>
         <ChatList data={this.state.data} onMessagePin={this.handleMessagePinning}/>
         <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
       </div>
@@ -142,9 +149,10 @@ var ChatBox = React.createClass({
 
 var PinnedList = React.createClass({
   render: function() {
+    var onMessageUnpin = this.props.onMessageUnpin;
     var messageNodes = this.props.data.map(function(message) {
       return (
-        <Message pinned={true} msg={message} pin={true}>
+        <Message pinned={true} msg={message} pin={true} onMessageUnpin={onMessageUnpin}>
           {message.text}
         </Message>
       );
@@ -263,6 +271,11 @@ var Message = React.createClass({
   handlePin: function() {
     this.props.onMessagePin(this.props.msg);
   },
+  handleUnpin: function() {
+    console.log('handling unpin');
+    console.log(this.props);
+    this.props.onMessageUnpin(this.props.msg);
+  },
 	getInitialState: function() {
 		return {pinned: false};
 	},
@@ -285,7 +298,7 @@ var Message = React.createClass({
                         <i className="fa fa-thumb-tack"></i>
                       </button>);
     if (this.props.pin)
-      pinOptions = (<button className="unpin-button" title="Unpin">
+      pinOptions = (<button className="unpin-button" onClick={this.handleUnpin} title="Unpin">
                         <i className="fa fa-close"></i>
                       </button>);
 
