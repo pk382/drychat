@@ -14,6 +14,15 @@ var emoji = require('markdown-it-emoji');
 // enable emojis
 md.use(emoji , []);
 
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 var SPLIT_CHARS = "``";
 var historyMsgs = [];
 var prev = 0;
@@ -36,8 +45,9 @@ var Application = React.createClass({
 		e.preventDefault();
 		var thisUser = React.findDOMNode(this.refs.username).value.trim();
 		React.findDOMNode(this.refs.username).value = '';
-		socket.emit('new participant', thisUser);
-		var newUsers = this.state.users.concat([thisUser]);
+    var newUser = {name: thisUser, color: getRandomColor()};
+		socket.emit('new participant', newUser);
+		var newUsers = this.state.users.concat([newUser]);
 		this.setState({username: thisUser, users: newUsers});
 	},
 	loadInitialUsers: function() {
@@ -77,7 +87,7 @@ var Application = React.createClass({
 			return (
 				<div className = "Application row">
 	  			<SidePanel users={this.state.users}/>
-					<ChatBox author={this.state.username} url="initial" pollInterval={2000}/>
+					<ChatBox author={this.state.username} users={this.state.users} url="initial" pollInterval={2000}/>
 				</div>
 			);
 		}
@@ -101,6 +111,11 @@ var ChatBox = React.createClass({
   handleMessageSend: function(message) {
   	prev = 0;
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+    for (u in this.props.users) {
+    	if (this.props.author === this.props.users[u].name) {
+    		message.color = this.props.users[u].color;
+    	}
+    }
     var d = new Date();
     message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
     var messages = this.state.data;
@@ -121,6 +136,13 @@ var ChatBox = React.createClass({
     var newPinnedMessages = pinnedMessages.concat([message]);
     this.setState({data: this.state.data, pinnedMessages: newPinnedMessages});
   },
+  handleMessageUnpinning: function(message) {
+    var pinnedMessages = this.state.pinnedMessages;
+    var newPinnedMessages = pinnedMessages.filter(function(element, index, array) {
+      return element !== message;
+    });
+    this.setState({data: this.state.data, pinnedMessages: newPinnedMessages});
+  },
   getInitialState: function() {
     return {pinnedMessages: [], data: []};
   },
@@ -131,7 +153,7 @@ var ChatBox = React.createClass({
   render: function() {
     return (
       <div className="ChatBox col-sm-9 col-xs-12">
-        <PinnedList data={this.state.pinnedMessages}/>
+        <PinnedList data={this.state.pinnedMessages} onMessageUnpin={this.handleMessageUnpinning}/>
         <ChatList data={this.state.data} onMessagePin={this.handleMessagePinning}/>
         <ChatForm author={this.props.author} onMessageSend={this.handleMessageSend}/>
       </div>
@@ -141,9 +163,10 @@ var ChatBox = React.createClass({
 
 var PinnedList = React.createClass({
   render: function() {
+    var onMessageUnpin = this.props.onMessageUnpin;
     var messageNodes = this.props.data.map(function(message) {
       return (
-        <Message pinned={true} msg={message} pin={true}>
+        <Message pinned={true} msg={message} pin={true} onMessageUnpin={onMessageUnpin}>
           {message.text}
         </Message>
       );
@@ -258,6 +281,23 @@ var ChatForm = React.createClass({
   }
 });
 
+var SearchResultsBox = React.createClass({
+  render: function() {
+    var searchResultNodes = this.props.results.slice(0, 2).map(function(result) {
+      return (
+        <div class="searchResult">
+          <a href={result.link} target="_blank"><h3>{result.title}</h3><p>{result.snippet}</p></a>
+        </div>
+      );
+    });
+    return (
+      <div className="searchResultsBox">
+        {searchResultNodes}
+      </div>
+    );
+  }
+});
+
 var Message = React.createClass({
   handleEdit: function() {
     launchEdit(this.state.id);
@@ -265,8 +305,28 @@ var Message = React.createClass({
   handlePin: function() {
     this.props.onMessagePin(this.props.msg);
   },
+  handleUnpin: function() {
+    console.log('handling unpin');
+    console.log(this.props);
+    this.props.onMessageUnpin(this.props.msg);
+  },
+  search: function() {
+    var code = this.refs.code.value;
+    var searchURL = "https://www.googleapis.com/customsearch/v1?key=AIzaSyCFjMnr00FvodBC0yW5D9KYeAHvcpUeq8Q&cx=017576662512468239146:omuauf_lfve&q=";
+    $.ajax({
+      url: searchURL + code,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({id: this.state.id, results: data.items});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('search', status, err.toString());
+      }.bind(this)
+    });
+  },
 	getInitialState: function() {
-		return {pinned: false};
+		return {pinned: false, results: []};
 	},
 	render: function() {
 		this.state.id = guid();
@@ -287,7 +347,7 @@ var Message = React.createClass({
                         <i className="fa fa-thumb-tack"></i>
                       </button>);
     if (this.props.pin)
-      pinOptions = (<button className="unpin-button" title="Unpin">
+      pinOptions = (<button className="unpin-button" onClick={this.handleUnpin} title="Unpin">
                         <i className="fa fa-close"></i>
                       </button>);
 
@@ -312,13 +372,14 @@ var Message = React.createClass({
                       <i className="fa fa-copy"></i>
                     </button>
                   </ReactZeroClipboard>
-                  <button className="action-button" title="Search">
+                  <button className="action-button" onClick={this.search} title="Search">
                     <i className="fa fa-search"></i>
                   </button>
                   <button className="action-button" id={"edit-"+this.state.id} onClick={this.handleEdit} title="Edit">
                     <i className="fa fa-pencil"></i>
                   </button>
                 </div>
+                <SearchResultsBox results={this.state.results}/>
               </div>);
 
     }

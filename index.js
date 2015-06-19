@@ -30,10 +30,10 @@ io.on('connection', function(socket){
     socket.broadcast.emit('chat message', message);
   });
 
-  socket.on('new participant', function(name) {
+  socket.on('new participant', function(user) {
     console.log('Got a new user!');
-    users.push(name);
-    socket.broadcast.emit('new participant', name);
+    users.push(user);
+    socket.broadcast.emit('new participant', user);
   });
 
   socket.on('disconnect', function(){
