@@ -25,7 +25,7 @@ var UsersList = React.createClass({
 	render: function() {
 		console.log(this.props.users);
 		var userNodes = this.props.users.map(function(user) {
-			return <User>{user.name}</User>
+			return <User color = {user.color}>{user.name}</User>
 		})
 		return (
 				<div className = "usersList">
@@ -38,7 +38,7 @@ var UsersList = React.createClass({
 var User = React.createClass({
 	render: function() {
 		return (
-			<div className = "userContainer" style={{'borderColor':'#660000'}}>
+			<div className = "userContainer" style={{'borderColor':this.props.color}}>
 				<div className = "gravatar"></div>
 				<div className = "userName"><strong>
 					{this.props.children}

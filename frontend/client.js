@@ -87,7 +87,7 @@ var Application = React.createClass({
 			return (
 				<div className = "Application row">
 	  			<SidePanel users={this.state.users}/>
-					<ChatBox author={this.state.username} url="initial" pollInterval={2000}/>
+					<ChatBox author={this.state.username} users={this.state.users} url="initial" pollInterval={2000}/>
 				</div>
 			);
 		}
@@ -111,6 +111,11 @@ var ChatBox = React.createClass({
   handleMessageSend: function(message) {
   	prev = 0;
     message.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+    for (u in this.props.users) {
+    	if (this.props.author === this.props.users[u].name) {
+    		message.color = this.props.users[u].color;
+    	}
+    }
     var d = new Date();
     message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
     var messages = this.state.data;
