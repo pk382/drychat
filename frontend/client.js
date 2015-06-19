@@ -437,9 +437,11 @@ var SearchResultsBox = React.createClass({
 
 var Message = React.createClass({
   handleEdit: function() {
-    launchEdit(this.state.id);
     var code = $('#code-' + this.state.id);
-    if (!code.hasClass('edit-active')) {
+    launchEdit(this.state.id);
+    if (code.hasClass('edit-active')) {
+      this.state.oldCode = code.text();
+    } else if (this.state.oldCode !== code.text()) {
       this.props.onMessageSend({text: SPLIT_CHARS + code.text()}, true);
     }
     this.setState({results: this.state.results});
