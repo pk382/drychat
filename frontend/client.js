@@ -1,6 +1,6 @@
 window.require = require;
 var React = require('react');
-var marked = require('marked');
+//var marked = require('marked');
 var $ = require('jquery');
 window.jQuery = $;
 var hljs = require('highlight.js');
@@ -9,8 +9,12 @@ var socket = io.connect();
 var SidePanel = require('./sidePanel.js');
 var bootstrap = require('bootstrap-less/js/bootstrap.js');
 var ReactZeroClipboard = require('react-zeroclipboard');
+var md = require('markdown-it')();
+var emoji = require('markdown-it-emoji');
+// enable emojis
+md.use(emoji , []);
 
-var SPLIT_CHARS = "//";
+var SPLIT_CHARS = "``";
 var historyMsgs = [];
 var prev = 0;
 
@@ -140,7 +144,7 @@ var PinnedList = React.createClass({
   render: function() {
     var messageNodes = this.props.data.map(function(message) {
       return (
-        <Message pinned={true} msg={message}>
+        <Message pinned={true} msg={message} pin={true}>
           {message.text}
         </Message>
       );
@@ -264,15 +268,28 @@ var Message = React.createClass({
 	},
 	render: function() {
 		this.state.id = guid();
-    emojione.ascii = true; //jus making sure
+    // handle same author
     var authorBody = (<div className="author-container col-xs-3"><div className="gravatar"></div><div className="author"><strong>{this.props.msg.author}</strong></div></div>);
     if (this.props.sameAuthor) {
       authorBody = (<div className="author-container col-xs-3"></div>);
     }
-    var rawMarkup = emojione.toImage(this.props.children.toString());
-    rawMarkup = marked(rawMarkup, {sanitize: false});
+
+    // markup
+    var rawMarkup = md.render(this.props.children.toString());
+
+    // handle repeat messages
     var generatedClass = this.props.msg.myself ? "message-container row myself" : "message-container row";
 
+    // handle pin
+    var pinOptions = (<button className="pin-button" onClick={this.handlePin} title="Pin">
+                        <i className="fa fa-thumb-tack"></i>
+                      </button>);
+    if (this.props.pin)
+      pinOptions = (<button className="unpin-button" title="Unpin">
+                        <i className="fa fa-close"></i>
+                      </button>);
+
+    // handle code block
     var ss = this.props.msg.text;
     var chunks = ss.split(SPLIT_CHARS)
     ss = ss.substring(ss.indexOf(SPLIT_CHARS)+SPLIT_CHARS.length);
@@ -280,9 +297,8 @@ var Message = React.createClass({
 
     if (chunks.length > 1 && ss.length > 0) {
       var normalText = chunks[0];
-      normalText = emojione.toImage(normalText);
       code = (<div>
-                <span dangerouslySetInnerHTML={{__html: marked(normalText, {sanitize: false})}} />
+                <span dangerouslySetInnerHTML={{__html: md.render(normalText)}} />
                 <div className="codeblock">
                   <pre>
 										<code id={"code-"+this.state.id} ref="code">{ss}</code>
@@ -314,9 +330,7 @@ var Message = React.createClass({
           <div className="timestamp">{this.props.msg.timestamp}</div>
         </div>
         <div className="col-xs-1">
-          <button className="pin-button" onClick={this.handlePin} title="Pin">
-            <i className="fa fa-thumb-tack"></i>
-          </button>
+          {pinOptions}
         </div>
       </div>
     );

@@ -3,14 +3,14 @@
   border-top: 4px solid @logo-red;
   font-family: "Droid Sans", sans-serif;
   padding-left: 0;
+  position: relative;
 }
 
 .chatList {
-  height: (93vh-@formheight);
   width: 100%;
   overflow-y: scroll;
   padding: 2vh 0;
-
+  height: (93vh-@formheight);
   @media only screen and (max-width : @small) {
     height: (75vh-@formheight);
   }
@@ -111,6 +111,7 @@ pre {
 textarea {
   background: #F5F5F5;
   border: none;
+  border-left: 0.4rem solid #CCC;
   padding-top: 1.5rem;
   resize: none;
   &:focus {
@@ -187,5 +188,27 @@ input[type="button"], input[type="reset"], input[type="submit"] {
   }
   i {
     text-align: center;
+  }
+}
+
+.unpin-button {
+  .pin-button;
+  color: #333;
+  &:hover {
+    color: #000;
+    margin-top: 0.9rem;
+  }
+}
+
+.pinnedList {
+  background: #FFFFE3;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.15);
+  width: 100%;
+
+  .author-container {
+    background: transparent;
+  }
+  .message {
+    background: transparent;
   }
 }
