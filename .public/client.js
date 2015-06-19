@@ -123,7 +123,7 @@ var ChatBox = React.createClass({displayName: "ChatBox",
     	}
     }
     var d = new Date();
-    message.timestamp =  (d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds()).replace(/(^|:)(\d)(?=:|\.)/g, '$10$2');
+    message.timestamp = d.toLocaleTimeString();
     var messages = this.state.data;
     var newMessages = messages.concat([message]);
     this.setState({data: newMessages, pinnedMessages: this.state.pinnedMessages});
