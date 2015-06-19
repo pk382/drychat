@@ -6,6 +6,15 @@ var bodyParser = require('body-parser');
 var messages = [];
 var users = [];
 
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 app.use(express.static('.public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -32,8 +41,9 @@ io.on('connection', function(socket){
 
   socket.on('new participant', function(name) {
     console.log('Got a new user!');
-    users.push(name);
-    socket.broadcast.emit('new participant', name);
+    var newUser = {name: name, color: getRandomColor()};
+    users.push(user);
+    socket.broadcast.emit('new participant', newUser);
   });
 
   socket.on('disconnect', function(){
